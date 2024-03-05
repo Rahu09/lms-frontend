@@ -1,7 +1,20 @@
+import { AuthorizationProvider } from "./context/AuthorizationProvider";
+import { BookList } from "./pages/BookList/BookList";
+import { Login } from "./pages/Login/Login";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+
 function App() {
   return (
     <>
-      <p>hii from the app.tsx</p>
+      <AuthorizationProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/booklist" element={<BookList />} />
+            <Route path="*" element={<div>Page path not defined</div>} />
+          </Routes>
+        </BrowserRouter>
+      </AuthorizationProvider>
     </>
   );
 }
