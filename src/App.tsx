@@ -1,4 +1,4 @@
-import { NavBar } from "./components/NavBar";
+import NavBar from "./components/NavBar";
 import { AuthorizationProvider } from "./context/AuthorizationProvider";
 import { BookList } from "./pages/BookList/BookList";
 import { Login } from "./pages/Login/Login";

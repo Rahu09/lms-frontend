@@ -1,3 +1,5 @@
+import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+// import { Button } from "@/components/ui/button";
 import BookServices from "@/services/BookServices";
 import { useQuery } from "@tanstack/react-query";
 
@@ -12,8 +14,8 @@ export const BookList = () => {
     return <div>An error has occoured {JSON.stringify(error)}</div>;
 
   return (
-    <div>
-      <table className="table table-striped">
+    <MaxWidthWrapper className=" max-w-screen-2xl">
+      <table className="table table-striped ">
         <thead>
           <tr>
             <th>ID</th>
@@ -50,6 +52,6 @@ export const BookList = () => {
             ))}
         </tbody>
       </table>
-    </div>
+    </MaxWidthWrapper>
   );
 };
