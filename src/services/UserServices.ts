@@ -7,6 +7,35 @@ const config = {
   },
 };
 
+type userRequest = {
+  title: string;
+  isbn: string;
+  authorName: string;
+  publisherName: string;
+  edition: string;
+  description: string;
+  language: string;
+  pages: number;
+  cost: number;
+  bookCount: number;
+  imageURL: string;
+};
+
+export type userResponse = {
+  id: number;
+  title: string;
+  isbn: string;
+  authorName: string;
+  publisherName: string;
+  edition: string;
+  description: string;
+  language: string;
+  pages: number;
+  cost: number;
+  bookCount: number;
+  imageURL: string;
+};
+
 class UserServices {
   async getUserLoanHistory(id: number) {
     try {
@@ -19,6 +48,17 @@ class UserServices {
       console.error("Error fetching data:", error);
     }
   }
+
+  getUserByEmail: (userEmail: string) => Promise<userResponse> = async (
+    userEmail
+  ) => {
+    const response = await axios.post(
+      `${BASE_REST_API_URL}/userDet`,
+      { email: userEmail },
+      config
+    );
+    return response.data;
+  };
 }
 
 export default new UserServices();

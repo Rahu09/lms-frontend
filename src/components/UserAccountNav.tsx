@@ -16,32 +16,27 @@ interface UserAccountNavProps {
   imageUrl: string;
 }
 
-const UserAccountNav = async ({
-  email,
-  imageUrl,
-  name,
-}: UserAccountNavProps) => {
+const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="overflow;-visible">
         <Button className="rounded-full h-8 w-8 aspect-square bg-slate-400">
-          {/* <Avatar className="relative w-8 h-8 ">
-            {imageUrl ? (
+          <div className="relative ">
+            {imageUrl.length > 0 ? (
               <div className="relative aspect-square h-full w-full">
-                <Image
-                  fill
+                <img
                   src={imageUrl}
                   alt="profile picture"
                   referrerPolicy="no-referrer"
                 />
               </div>
             ) : (
-              <AvatarFallback>
+              <div>
                 <span className="sr-only">{name}</span>
-                <Icons.user className="h-4 w-4 text-zinc-900" />
-              </AvatarFallback>
+                <Icons.user className="h-4 w-4 " />
+              </div>
             )}
-          </Avatar> */}
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-white" align="end">

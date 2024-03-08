@@ -5,9 +5,10 @@ import { ArrowRight } from "lucide-react";
 import UserAccountNav from "./UserAccountNav";
 import MobileNav from "./MobileNav";
 import { Link } from "react-router-dom";
+import { useAuthorization } from "@/context/AuthorizationProvider";
 
 const Navbar = () => {
-  const user = null;
+  const user = useAuthorization().getAuthData;
 
   return (
     <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
@@ -17,7 +18,7 @@ const Navbar = () => {
             <span>quill.</span>
           </a>
 
-          <MobileNav isAuth={!!user} />
+          <MobileNav isAuth={user ? true : false} />
 
           <div className="hidden items-center space-x-4 sm:flex">
             {!user ? (
@@ -61,15 +62,15 @@ const Navbar = () => {
                   Dashboard
                 </Link>
 
-                {/* <UserAccountNav
+                <UserAccountNav
                   name={
-                    !user.given_name || !user.family_name
+                    !user.firstName || !user.lastName
                       ? "Your Account"
-                      : `${user.given_name} ${user.family_name}`
+                      : `${user.firstName} ${user.lastName}`
                   }
                   email={user.email ?? ""}
-                  imageUrl={user.picture ?? ""}
-                /> */}
+                  imageUrl={user.image ?? ""}
+                />
               </>
             )}
           </div>

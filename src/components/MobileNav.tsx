@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, Menu } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
@@ -12,9 +12,9 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
 
   const pathname = location.pathname;
 
-  useEffect(() => {
-    if (isOpen) toggleOpen();
-  }, [isOpen, pathname]);
+  // useEffect(() => {
+  //   if (isOpen) toggleOpen();
+  // }, [isOpen, pathname]);
 
   const closeOnCurrent = (href: string) => {
     if (pathname === href) toggleOpen();
@@ -22,10 +22,7 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
 
   return (
     <div className="sm:hidden">
-      <Menu
-        onClick={toggleOpen}
-        className="relative z-50 h-5 w-5 text-zinc-100"
-      />
+      <Menu onClick={toggleOpen} className="relative z-50 h-5 w-5 text-black" />
 
       {isOpen ? (
         <div className="fixed animate-in slide-in-from-top-5 fade-in-20 inset-0 z-0 w-full">
