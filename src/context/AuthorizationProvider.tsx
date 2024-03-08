@@ -1,11 +1,23 @@
+import AuthenticationService from "@/services/AuthenticationService";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type AuthorizationProviderProps = {
   children: React.ReactNode;
 };
 
+type DataProps = {
+  role: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  image: string;
+  id: number;
+};
+
 interface IAuthorizationContext {
-  getAuthData: { token: string } | undefined;
+  getAuthData: DataProps | undefined;
 }
 
 const AuthorizationContext = createContext<IAuthorizationContext | null>(null);
@@ -23,13 +35,14 @@ export const useAuthorization = () => {
 export const AuthorizationProvider: React.FC<AuthorizationProviderProps> = ({
   children,
 }) => {
-  const [data, setData] = useState<{ token: string }>();
+  const { data, status, error } = useQuery({
+    queryKey: ["details"],
+    queryFn: () => AuthenticationService.getDetails(),
+  });
+  if (status === "pending") console.log("fetching userdetails");
+  if (status === "error") console.log("error in userDetails", error);
 
   const getAuthData: IAuthorizationContext["getAuthData"] = data;
-
-  useEffect(() => {
-    setData({ token: `${localStorage.getItem("token")}` });
-  }, []);
 
   return (
     <AuthorizationContext.Provider value={{ getAuthData }}>

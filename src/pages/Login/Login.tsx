@@ -1,9 +1,12 @@
 import React from "react";
 import AuthenticationService from "@/services/AuthenticationService";
+import { useAuthorization } from "@/context/AuthorizationProvider";
+import axios from "axios";
 
 export const Login = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const auth = useAuthorization();
 
   const handlesubmit = () => {
     console.log(email, password);
@@ -13,7 +16,7 @@ export const Login = () => {
     };
     AuthenticationService.login(requestData).then((response) => {
       console.log(response);
-      // window.location.reload();
+      window.location.reload();
     });
   };
 

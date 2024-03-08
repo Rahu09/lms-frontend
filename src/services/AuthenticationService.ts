@@ -13,6 +13,7 @@ class AuthenticationService {
       requestData
     );
     localStorage.setItem("token", response.data.token);
+    localStorage.setItem("email", response.data.email);
     return response.data;
   }
 
@@ -22,6 +23,17 @@ class AuthenticationService {
       requestData
     );
     localStorage.setItem("token", response.data.token);
+    localStorage.setItem("email", response.data.email);
+
+    return response.data;
+  }
+  async getDetails() {
+    const response = await axios.get(
+      `http://localhost:8080/api/v1/auth/getDetails/${localStorage.getItem(
+        "email"
+      )}`,
+      this.config
+    );
     return response.data;
   }
 

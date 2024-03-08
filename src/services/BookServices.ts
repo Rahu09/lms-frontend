@@ -82,6 +82,41 @@ class BookServices {
     );
     return response.data;
   };
+
+  getCategoryByBookId: (id: number) => Promise<string[]> = async (id) => {
+    const response = await axios.get(
+      `${BASE_REST_API_URL}/bookcategory/${id}`,
+      config
+    );
+    return response.data;
+  };
+
+  getLoanCount: (id: number) => Promise<number> = async (id) => {
+    const response = await axios.get(
+      `${BASE_REST_API_URL}/bookloancount/${id}`,
+      config
+    );
+    return response.data;
+  };
+
+  getReservationCount: (id: number) => Promise<number> = async (id) => {
+    const response = await axios.get(
+      `${BASE_REST_API_URL}/bookreservationcount/${id}`,
+      config
+    );
+    return response.data;
+  };
+
+  getUserBookLoanCount: (userEmail: string) => Promise<number> = async (
+    userEmail
+  ) => {
+    const response = await axios.post(
+      `${BASE_REST_API_URL}/bookreservationcount`,
+      { email: userEmail },
+      config
+    );
+    return response.data;
+  };
 }
 
 export default new BookServices();
