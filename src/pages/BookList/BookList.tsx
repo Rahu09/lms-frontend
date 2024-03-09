@@ -1,5 +1,4 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-// import { Button } from "@/components/ui/button";
 import BookServices from "@/services/BookServices";
 import { useQuery } from "@tanstack/react-query";
 import { BookCard } from "./BookCard";
@@ -14,6 +13,10 @@ import { useAuthorization } from "@/context/AuthorizationProvider";
 import { Typography } from "@mui/material";
 import { Button } from "@/components/ui/button";
 import { FilterBox } from "./FilterBox";
+import { filterOptions } from "@/lib/enums";
+import { MobileFilter } from "./MobileFilterBox";
+import { cn } from "@/lib/utils";
+import { MobileFilterSort } from "./MobileFilterSort";
 
 export const BookList = () => {
   const { data, status, error } = useQuery({
@@ -22,59 +25,68 @@ export const BookList = () => {
   });
 
   const [sort, setSort] = useState<string>();
-  const [author, setAuthor] = useState<string[]>([
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
+  const [openSort, setOpenSort] = useState<boolean>(false);
+  const [openFilter, setOpenFilter] = useState<boolean>(false);
+  const [mobileFilter, setMobileFilter] = useState<filterOptions>(
+    filterOptions.AUTHOR
+  );
+  const [filter, setFilter] = useState<
+    {
+      type: filterOptions;
+      filterElement: string[];
+    }[]
+  >([
+    { type: filterOptions.AUTHOR, filterElement: ["a", "b", "c", "d"] },
+    { type: filterOptions.CATEGORY, filterElement: ["e", "f", "g", "h"] },
+    { type: filterOptions.LANGUAGE, filterElement: ["i", "j", "k", "l"] },
   ]);
-  const [category, setCategory] = useState<string[]>([
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-  ]);
-  const [language, setLanguage] = useState<string[]>([
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-  ]);
+
+  const emptyBooleanArray = (filterType: filterOptions) => {
+    let index = 0;
+    filter.map((ele, ind) => {
+      if (ele.type === filterType) index = ind;
+    });
+    return [
+      ...Array.from({
+        length: filter[index].filterElement.length,
+      }).map((_) => false),
+    ];
+  };
+
   const [selected, setSelected] = useState<
     {
-      filter: string;
+      type: filterOptions;
       state: boolean[];
     }[]
   >([
-    { filter: "author", state: [] },
-    { filter: "language", state: [] },
-    { filter: "category", state: [] },
+    {
+      type: filterOptions.AUTHOR,
+      state: emptyBooleanArray(filterOptions.AUTHOR),
+    },
+    {
+      type: filterOptions.CATEGORY,
+      state: emptyBooleanArray(filterOptions.CATEGORY),
+    },
+    {
+      type: filterOptions.LANGUAGE,
+      state: emptyBooleanArray(filterOptions.LANGUAGE),
+    },
   ]);
+
+  useEffect(() => {
+    console.log("hii");
+  }, [selected, setSelected]);
+
   // const auth = useAuthorization();
 
   // console.log(data);
   // console.log(auth.getAuthData);
   console.log(selected);
+  console.log(mobileFilter);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSort(event.target.value);
   };
-
-  useEffect(() => {
-    console.log("selected changed");
-  }, [selected, setSelected]);
 
   if (status === "pending") return <div>Loading...</div>;
   if (status === "error")
@@ -110,7 +122,7 @@ export const BookList = () => {
                     marginY: "-4px",
                   }}
                 >
-                  BookList items -{" "}
+                  BookList items -
                   <Typography
                     variant="caption"
                     display="block"
@@ -121,21 +133,15 @@ export const BookList = () => {
                   </Typography>
                 </Typography>
                 <div className="mt-4 flex flex-row flex-wrap ">
-                  {selected.map((filter, index) =>
-                    filter.state.map(
+                  {selected.map((filterType, index) =>
+                    filterType.state.map(
                       (ele, ind) =>
                         ele && (
                           <div
                             key={ind}
                             className="mr-3 flex flex-row justify-center items-center  rounded-3xl px-3 w-fit h-7 border border-gray-300"
                           >
-                            <div>{`${selected[index].filter}:${
-                              index === 0
-                                ? author[ind]
-                                : index === 1
-                                ? category[ind]
-                                : language[ind]
-                            }`}</div>
+                            <div>{`${selected[index].type}:${filter[index].filterElement[ind]}`}</div>
                             <Button
                               variant="ghost"
                               className="p-0 m-0 pl-2 hover:bg-transparent "
@@ -172,22 +178,25 @@ export const BookList = () => {
               {/* Side bar*/}
               <div className="hidden lg:block w-[24%] border-[1px] border-gray-300 border-l-0 border-b-0 h-fit ml-5">
                 <FilterBox
-                  filter={author}
-                  filterName={"author"}
+                  filter={filter}
+                  setFilter={setFilter}
+                  filterName={filterOptions.AUTHOR}
                   selected={selected}
                   setSelected={setSelected}
                 />
                 <hr className="mt-5 border-[1px] border-gray-300 mr-3" />
                 <FilterBox
-                  filter={category}
-                  filterName={"category"}
+                  filter={filter}
+                  setFilter={setFilter}
+                  filterName={filterOptions.CATEGORY}
                   selected={selected}
                   setSelected={setSelected}
                 />
                 <hr className="mt-5 border-[1px] border-gray-300 mr-3" />
                 <FilterBox
-                  filter={language}
-                  filterName={"language"}
+                  filter={filter}
+                  setFilter={setFilter}
+                  filterName={filterOptions.LANGUAGE}
                   selected={selected}
                   setSelected={setSelected}
                 />
@@ -199,62 +208,120 @@ export const BookList = () => {
                 ))}
               </div>
             </div>
+            <MobileFilterSort
+              filter={filter}
+              setFilter={setFilter}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            {/* {openSort && (
+              <div className="fixed animate-in slide-in-from-bottom-5 fade-in-20 inset-0 z-0 w-full">
+                <ul className="absolute bottom-0 bg-white border-b border-zinc-200 shadaw-xl grid w-full gap-1 pb-20 px-20 pt-8">
+                  <li>
+                    <Button
+                      variant={"link"}
+                      className="flex items-center w-full font-semibold  text-lg"
+                    >
+                      link1
+                    </Button>
+                  </li>
+                  <li className="my-1 h-px w-full bg-gray-300" />
+                  <li>
+                    <Button
+                      variant={"link"}
+                      className="flex items-center w-full font-semibold text-lg p-0 m-0 "
+                    >
+                      link
+                    </Button>
+                  </li>
+                </ul>
+              </div>
+            )}
+            {openFilter && (
+              <div className=" flex flex-row fixed bg-white animate-in slide-in-from-bottom-5 fade-in-20 inset-0 z-0 w-full">
+                <div className=" w-[35%] bg-slate-200 border-none">
+                  <ul className=" shadaw-xl flex flex-col justify-center items-center w-full gap-1 pt-20">
+                    {filter.map((ele) => (
+                      <>
+                        <li className="w-full m-0 p-0">
+                          <Button
+                            variant={"link"}
+                            className={cn(
+                              "flex items-center w-full font-semibold text-lg focus:no-underline focus:bg-white rounded-none h-14",
+                              {
+                                " bg-white": mobileFilter === ele.type,
+                              }
+                            )}
+                            onClick={() => setMobileFilter(ele.type)}
+                          >
+                            {ele.type}
+                          </Button>
+                        </li>
+                      </>
+                    ))}
+                  </ul>
+                </div>
+                <div className="w-[63%] border-none">
+                  <div className="h-full pt-20">
+                    {mobileFilter === filterOptions.AUTHOR ? (
+                      <MobileFilter
+                        filter={filter}
+                        setFilter={setFilter}
+                        filterName={filterOptions.AUTHOR}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    ) : mobileFilter === filterOptions.CATEGORY ? (
+                      <MobileFilter
+                        filter={filter}
+                        setFilter={setFilter}
+                        filterName={filterOptions.CATEGORY}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    ) : mobileFilter === filterOptions.LANGUAGE ? (
+                      <MobileFilter
+                        filter={filter}
+                        setFilter={setFilter}
+                        filterName={filterOptions.LANGUAGE}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    ) : (
+                      <div> NO filter Selected</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="lg:hidden h-16 w-full bg-white sticky bottom-0 flex flex-row justify-between items-center border-solid border-t-2 text-slate-400">
-              <Button className="bg-transparent text-black w-[50%] h-full hover:bg-slate-200 rounded-none">
+              <Button
+                className="bg-transparent text-black w-[50%] h-full hover:bg-white rounded-none"
+                onClick={() => {
+                  setOpenFilter((old) => !old);
+                  setOpenSort(false);
+                }}
+              >
                 <Filter />
                 filter
               </Button>
               <div className="p-0 m-0 text-[3rem]  text-center  text-slate-400">
                 |
               </div>
-              <Button className="bg-transparent text-black w-[50%] h-full hover:bg-slate-200 rounded-none">
+              <Button
+                className="bg-transparent text-black w-[50%] h-full hover:bg-white rounded-none"
+                onClick={() => {
+                  setOpenSort((old) => !old);
+                  setOpenFilter(false);
+                }}
+              >
                 <ArrowUpWideNarrow />
                 sort
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
     </MaxWidthWrapper>
   );
 };
-
-{
-  /* <table className="table table-striped ">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Discription</th>
-            <th>cost</th>
-            <th>isbn</th>
-            <th>language</th>
-            <th>pages</th>
-            <th>author</th>
-            <th>publication</th>
-            <th>book count</th>
-            <th>edition</th>
-            <th>update book</th>
-            <th>delete book</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data &&
-            data.map((item, ind) => (
-              <tr key={ind}>
-                <td>{item.id}</td>
-                <td>{item.title}</td>
-                <td>{item.description}</td>
-                <td>{item.cost}</td>
-                <td>{item.isbn}</td>
-                <td>{item.language}</td>
-                <td>{item.pages}</td>
-                <td>{item.authorName}</td>
-                <td>{item.publisherName}</td>
-                <td>{item.bookCount}</td>
-                <td>{item.edition}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table> */
-}

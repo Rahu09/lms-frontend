@@ -1,16 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { FilterProps } from "@/lib/types";
+import { useState } from "react";
 
-export const FilterBox = ({
+export const MobileFilter = ({
   filter,
   setFilter,
   filterName,
   selected,
   setSelected,
 }: FilterProps) => {
+  console.log(filter, setFilter, filterName, selected, setSelected);
+
   const [input, setInput] = useState<string>();
   let filterIndex = -1;
   let selectedIndex = -1;
@@ -64,13 +66,10 @@ export const FilterBox = ({
       !tempSelected[selectedIndex].state[ind];
     setSelected(tempSelected);
   };
-
   return (
-    <div className="mt-2 mr-2">
-      <p className=" text-md text-gray-600 font-bold ">
-        {filterName.toUpperCase()}
-      </p>
-      <div className="flex flex-row gap-2 mt-4">
+    <div className="h-full w-full  flex flex-col justify-start items-start px-4">
+      {filterName}
+      <div className="flex flex-row gap-2 my-4">
         <Input
           type="email"
           placeholder="Type to Add Filter"
@@ -80,23 +79,21 @@ export const FilterBox = ({
         />
         <Button onClick={addFilter}>Add</Button>
       </div>
-      <div className="mt-5">
-        {filter[filterIndex].filterElement.map((ele, ind) => (
-          <div key={ind} className=" flex space-x-2 mt-3">
-            <Checkbox
-              id={ind.toString()}
-              checked={selected[selectedIndex].state[ind]}
-              onCheckedChange={() => handleChecked(ind)}
-            />
-            <label
-              htmlFor="terms1"
-              className="text-md leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {ele}
-            </label>
-          </div>
-        ))}
-      </div>
+      {filter[filterIndex].filterElement.map((ele, ind) => (
+        <div key={ind} className=" flex space-x-2 mt-3">
+          <Checkbox
+            id={ind.toString()}
+            checked={selected[selectedIndex].state[ind]}
+            onCheckedChange={() => handleChecked(ind)}
+          />
+          <label
+            htmlFor="terms1"
+            className="text-md leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {ele}
+          </label>
+        </div>
+      ))}
     </div>
   );
 };
