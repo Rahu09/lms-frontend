@@ -3,15 +3,17 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import BookServices from "@/services/BookServices";
 import { useQuery } from "@tanstack/react-query";
 import { BookCard } from "./BookCard";
-import { Button } from "@/components/ui/button";
-import { ArrowUpWideNarrow, Filter } from "lucide-react";
+import { ArrowUpWideNarrow, Filter, X } from "lucide-react";
 
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthorization } from "@/context/AuthorizationProvider";
+import { Typography } from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { FilterBox } from "./FilterBox";
 
 export const BookList = () => {
   const { data, status, error } = useQuery({
@@ -19,28 +21,132 @@ export const BookList = () => {
     queryFn: () => BookServices.getAllBooks(1),
   });
 
-  const [age, setAge] = useState<string>();
-  const auth = useAuthorization();
+  const [sort, setSort] = useState<string>();
+  const [author, setAuthor] = useState<string[]>([
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+  ]);
+  const [category, setCategory] = useState<string[]>([
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+  ]);
+  const [language, setLanguage] = useState<string[]>([
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+  ]);
+  const [selected, setSelected] = useState<
+    {
+      filter: string;
+      state: boolean[];
+    }[]
+  >([
+    { filter: "author", state: [] },
+    { filter: "language", state: [] },
+    { filter: "category", state: [] },
+  ]);
+  // const auth = useAuthorization();
+
+  // console.log(data);
+  // console.log(auth.getAuthData);
+  console.log(selected);
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setSort(event.target.value);
+  };
+
+  useEffect(() => {
+    console.log("selected changed");
+  }, [selected, setSelected]);
+
   if (status === "pending") return <div>Loading...</div>;
   if (status === "error")
     return <div>An error has occoured {JSON.stringify(error)}</div>;
-
-  console.log(data);
-  console.log(auth.getAuthData);
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
-  };
-
   return (
     <MaxWidthWrapper className=" max-w-[90rem]">
       <div className="flex flex-col">
-        <div className=" w-[100%] h-[45vh] bg-red-50">banner</div>
+        <div className=" w-[100%] h-[45vh] bg-[#dbeafe] flex justify-center items-center">
+          banner
+        </div>
         <div>
           <div>
-            <div className=" mt-10 h-20 hidden lg:flex flex-row items-center justify-between pl-[25%]">
-              <div>
-                <p>/info about filter</p>
+            <div className=" mt-10 h-28 hidden lg:flex flex-row items-center justify-between pl-[25%]">
+              <div className="flex flex-col justify-start items-start h-full w-[70%] pt-4">
+                <Typography
+                  variant="overline"
+                  display="block"
+                  gutterBottom
+                  sx={{
+                    color: "#aaacaf",
+                    marginY: "-4px",
+                  }}
+                >
+                  Home / Book List
+                </Typography>
+                <Typography
+                  variant="caption"
+                  display="block"
+                  gutterBottom
+                  sx={{
+                    color: "#5b5c5e",
+                    display: "inline",
+                    marginY: "-4px",
+                  }}
+                >
+                  BookList items -{" "}
+                  <Typography
+                    variant="caption"
+                    display="block"
+                    gutterBottom
+                    sx={{ color: "#aaacaf", display: "inline" }}
+                  >
+                    {23}
+                  </Typography>
+                </Typography>
+                <div className="mt-4 flex flex-row flex-wrap ">
+                  {selected.map((filter, index) =>
+                    filter.state.map(
+                      (ele, ind) =>
+                        ele && (
+                          <div
+                            key={ind}
+                            className="mr-3 flex flex-row justify-center items-center  rounded-3xl px-3 w-fit h-7 border border-gray-300"
+                          >
+                            <div>{`${selected[index].filter}:${
+                              index === 0
+                                ? author[ind]
+                                : index === 1
+                                ? category[ind]
+                                : language[ind]
+                            }`}</div>
+                            <Button
+                              variant="ghost"
+                              className="p-0 m-0 pl-2 hover:bg-transparent "
+                            >
+                              <X size={"16px"} color="gray" />
+                            </Button>
+                          </div>
+                        )
+                    )
+                  )}
+                </div>
               </div>
               <FormControl sx={{ m: 1, minWidth: 240 }} size="small">
                 <InputLabel id="demo-select-small-label">
@@ -49,22 +155,45 @@ export const BookList = () => {
                 <Select
                   labelId="demo-select-small-label"
                   id="demo-select-small"
-                  value={age}
+                  value={sort}
                   label="Select Sorting Options"
                   onChange={handleChange}
                 >
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value={10}>Alphabetical</MenuItem>
+                  <MenuItem value={20}>Popularity</MenuItem>
+                  <MenuItem value={30}>Newest</MenuItem>
                 </Select>
               </FormControl>
             </div>
-            <div className="flex flex-row gap-4 bg-slate-100  mt-10">
-              <div className="hidden lg:block w-[24%]">filter</div>
-              <div className=" w-full h-fit flex flex-row flex-wrap justify-around gap-0 sm:gap-2 items-center">
+            <div className="flex flex-row gap-4  mt-4">
+              {/* Side bar*/}
+              <div className="hidden lg:block w-[24%] border-[1px] border-gray-300 border-l-0 border-b-0 h-fit ml-5">
+                <FilterBox
+                  filter={author}
+                  filterName={"author"}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <hr className="mt-5 border-[1px] border-gray-300 mr-3" />
+                <FilterBox
+                  filter={category}
+                  filterName={"category"}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <hr className="mt-5 border-[1px] border-gray-300 mr-3" />
+                <FilterBox
+                  filter={language}
+                  filterName={"language"}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </div>
+              {/* book container */}
+              <div className=" w-full h-fit flex flex-row flex-wrap justify-around gap-0 sm:gap-2 items-center pt-2 border-t-[1px] border-gray-300 ">
                 {Array.from({ length: 20 }).map((_, ind) => (
                   <BookCard key={ind} />
                 ))}

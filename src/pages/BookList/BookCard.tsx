@@ -10,7 +10,7 @@ import {
 
 export function BookCard() {
   return (
-    <Card className="inline-block mt-8 w-[45vw] max-w-[24rem] lg:w-[24%]">
+    <Card className="inline-block mb-8 w-[45vw] max-w-[24rem] lg:w-[24%]">
       <CardHeader>
         <CardTitle>Create project</CardTitle>
         <CardDescription>Deploy your new project in one-click.</CardDescription>
