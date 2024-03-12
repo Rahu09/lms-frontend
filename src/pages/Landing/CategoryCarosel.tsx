@@ -16,7 +16,7 @@ export function CategoryCarosel({ ind }: { ind: number }) {
   return (
     <div
       className={cn(
-        "border flex flex-col items-center  justify-center lg:justify-between 2xl:justify-center bg-red-300 rounded-lg",
+        "border flex flex-col items-center  justify-center lg:justify-between 2xl:justify-center bg-gray-300 rounded-lg",
         {
           "lg:flex-row": ind % 2 !== 0,
           "lg:flex-row-reverse": ind % 2 === 0,
@@ -28,7 +28,7 @@ export function CategoryCarosel({ ind }: { ind: number }) {
       </div>
       <Carousel
         className={cn(
-          "w-full max-w-screen-sm md:max-w-screen-md  lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-screen-2xl bg-red-700 lg:rounded-lg",
+          "w-full max-w-screen-sm md:max-w-screen-md  lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-screen-2xl bg-gray-700 lg:rounded-lg",
           {
             "lg:pl-10": ind % 2 !== 0,
             "lg:pr-10": ind % 2 === 0,
@@ -51,7 +51,7 @@ export function CategoryCarosel({ ind }: { ind: number }) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="hidden 2xl:block">
+        <div className="hidden lg:block">
           <CarouselPrevious className="ml-[3.5rem]" />
           <CarouselNext className="mr-[3.5rem]" />
         </div>

@@ -19,6 +19,7 @@ type bookRequest = {
   cost: number;
   bookCount: number;
   imageURL: string;
+  link: string;
 };
 
 export type bookResponse = {
@@ -34,19 +35,29 @@ export type bookResponse = {
   cost: number;
   bookCount: number;
   imageURL: string;
+  link: string;
 };
 
+export interface Page {
+  data: bookResponse[];
+  nextPage: number | undefined;
+  prevPage: number | undefined;
+}
+
 class BookServices {
-  async getAllBooks(id: number): Promise<bookResponse[]> {
+  async getAllBooks(page: number): Promise<Page> {
     const response = await axios.get(
-      "http://localhost:8080/api/v1/book/books",
-      config
+      `http://localhost:8080/api/v1/book/books?size=${20}&page=${page}`
+      // config
     );
-    console.log(id);
-
-    console.log("book data", response.data);
-
-    return response.data;
+    // console.log("book data", response.data);
+    const nextPage = page < response.data.totalPages - 1 ? page + 1 : undefined;
+    const prevPage = page > 0 ? page - 1 : undefined;
+    return {
+      data: response.data.content,
+      nextPage: nextPage,
+      prevPage: prevPage,
+    };
   }
 
   async deleteBook(id: number) {
@@ -77,8 +88,8 @@ class BookServices {
 
   getBookById: (id: number) => Promise<bookResponse> = async (id) => {
     const response = await axios.get(
-      `${BASE_REST_API_URL}/books/${id}`,
-      config
+      `${BASE_REST_API_URL}/books/${id}`
+      // config
     );
     return response.data;
   };
@@ -102,17 +113,6 @@ class BookServices {
   getReservationCount: (id: number) => Promise<number> = async (id) => {
     const response = await axios.get(
       `${BASE_REST_API_URL}/bookreservationcount/${id}`,
-      config
-    );
-    return response.data;
-  };
-
-  getUserBookLoanCount: (userEmail: string) => Promise<number> = async (
-    userEmail
-  ) => {
-    const response = await axios.post(
-      `${BASE_REST_API_URL}/bookreservationcount`,
-      { email: userEmail },
       config
     );
     return response.data;

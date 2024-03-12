@@ -15,7 +15,9 @@ const Navbar = () => {
       <MaxWidthWrapper>
         <div className="flex h-14 items-center justify-between border-b border-zinc-200">
           <a href="/" className="flex z-40 font-semibold">
-            <span>quill.</span>
+            <span className="">
+              <img src="/logo.png" className="h-[1.8rem]" alt="" />
+            </span>
           </a>
 
           <MobileNav isAuth={user ? true : false} />
@@ -23,7 +25,7 @@ const Navbar = () => {
           <div className="hidden items-center space-x-4 sm:flex">
             {!user ? (
               <>
-                <Link
+                {/* <Link
                   to="/pricing"
                   className={buttonVariants({
                     variant: "ghost",
@@ -31,13 +33,13 @@ const Navbar = () => {
                   })}
                 >
                   Pricing
-                </Link>
+                </Link> */}
                 <Link
                   className={buttonVariants({
                     variant: "ghost",
                     size: "sm",
                   })}
-                  to="/"
+                  to="/login"
                 >
                   Sign in
                 </Link>
@@ -45,7 +47,7 @@ const Navbar = () => {
                   className={buttonVariants({
                     size: "sm",
                   })}
-                  to="/"
+                  to="/booklist"
                 >
                   Get started <ArrowRight className="ml-1.5 h-5 w-5" />
                 </Link>
@@ -53,13 +55,13 @@ const Navbar = () => {
             ) : (
               <>
                 <Link
-                  to="/dashboard"
+                  to="/booklist"
                   className={buttonVariants({
                     variant: "ghost",
                     size: "sm",
                   })}
                 >
-                  Dashboard
+                  BookList
                 </Link>
 
                 <UserAccountNav

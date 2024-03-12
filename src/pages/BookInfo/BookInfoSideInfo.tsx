@@ -1,12 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import BookServices from "@/services/BookServices";
+import { useAuthorization } from "@/context/AuthorizationProvider";
 interface Props {
   cost: number;
   bookId: number;
   bookCount: number;
 }
 const BookInfoSideInfo = ({ cost, bookId, bookCount }: Props) => {
+  //getting user context
+  const auth = useAuthorization();
+  console.log(auth.getAuthData?.id);
+
+  //get user book limit
+  const bookLimit: number = auth.getAuthData?.noOfBooksLoan ?? 0;
   // Get loan count for book
   const {
     data: loanCountData,
@@ -27,18 +34,8 @@ const BookInfoSideInfo = ({ cost, bookId, bookCount }: Props) => {
     queryFn: () => BookServices.getReservationCount(bookId),
   });
 
-  //get userEmail
-  const userEmail = "";
+  //get user details from userid, get userbookloan count
 
-  //get user book limit from useremail
-  const {
-    data: userbookloancount,
-    status: userbookloancountStatus,
-    error: userbookloancountError,
-  } = useQuery({
-    queryKey: ["reservationCount", userEmail],
-    queryFn: () => BookServices.getUserBookLoanCount(userEmail),
-  });
   if (loanCountStatus === "pending") return <div>Loading...</div>;
   if (loanCountStatus === "error")
     return <div>An error has occurred {JSON.stringify(loanCountError)}</div>;
@@ -52,20 +49,12 @@ const BookInfoSideInfo = ({ cost, bookId, bookCount }: Props) => {
     );
   console.log("reservationCountData log: ", reservationCountData);
 
-  if (userbookloancountStatus === "pending") return <div>Loading...</div>;
-  if (userbookloancountStatus === "error")
-    return (
-      <div>An error has occurred {JSON.stringify(userbookloancountError)}</div>
-    );
-  console.log("reservationCountData log: ", userbookloancount);
-
   const availableBooks = bookCount - loanCountData;
   let buttonText = "Borrow";
-  const bookLimit = userbookloancount; //get user book limit
 
   return (
     <>
-      <div className="flex flex-col align-middle justify-center border-black rounded-xl border-4 px-16">
+      <div className="flex flex-col align-middle justify-center border-none rounded-xl border-4 px-16">
         <p className="font-bold">More Information</p>
         <p>Cost: {cost}</p>
         {availableBooks > 0 ? (
@@ -82,8 +71,6 @@ const BookInfoSideInfo = ({ cost, bookId, bookCount }: Props) => {
         )}
       </div>
       <div className="flex justify-center align-middle pt-2">
-        {/* if all the books have been rented, ie books count is zero , then we display Reserve here and redirect to createReservation page */}
-        {/* disable the button if the user limit has reached to borrow  get the user data*/}
         <Button disabled={bookLimit === 5}>{buttonText}</Button>
         {bookLimit === 5 ? (
           <p className="text-red-600">

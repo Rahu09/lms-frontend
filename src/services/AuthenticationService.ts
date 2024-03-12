@@ -22,12 +22,15 @@ class AuthenticationService {
       `${this.BASE_REST_API_URL}/authenticate`,
       requestData
     );
+    // console.log(response.data.token, response.data.email);
+
     localStorage.setItem("token", response.data.token);
     localStorage.setItem("email", response.data.email);
 
     return response.data;
   }
   async getDetails() {
+    if (localStorage.getItem("email") === null) return null;
     const response = await axios.get(
       `http://localhost:8080/api/v1/auth/getDetails/${localStorage.getItem(
         "email"

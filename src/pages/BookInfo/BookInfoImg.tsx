@@ -1,4 +1,4 @@
-import bookimage from "../../assets/bookimage.jpg";
+// import bookimage from "@/assets/bookimage.jpg";
 interface Prop {
   imageUrl: string;
 }
@@ -7,14 +7,14 @@ const BookInfoImg = ({ imageUrl }: Prop) => {
 
   return (
     <div
-      className="py-4"
+      className="py-4 flex justify-center"
       // className="flex flex-col justify-center align-middle border-black rounded-lg "
     >
       {/* change the image src here after data change */}
       <img
-        src={bookimage}
+        src={imageUrl}
         alt="Book Image"
-        className="w-100 h-100 border-black rounded-xl border-4"
+        className="w-[70%] rounded-xl border-8"
       />
     </div>
   );

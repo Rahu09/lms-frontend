@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { FilterProps } from "@/lib/types";
 import { useState } from "react";
 
-export const MobileFilter = ({
+export const MobileFilterBox = ({
   filter,
   setFilter,
   filterName,
@@ -68,7 +68,9 @@ export const MobileFilter = ({
   };
   return (
     <div className="h-full w-full  flex flex-col justify-start items-start px-4">
-      {filterName}
+      <div className="flex flex-row justify-between w-full">
+        <p>{filterName}</p>
+      </div>
       <div className="flex flex-row gap-2 my-4">
         <Input
           type="email"

@@ -14,6 +14,10 @@ type DataProps = {
   email: string;
   image: string;
   id: number;
+  contactNo: string;
+  address: string;
+  noOfBooksLoan: number;
+  gender: string;
 };
 
 interface IAuthorizationContext {

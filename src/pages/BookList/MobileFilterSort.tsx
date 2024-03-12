@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { MobileFilter } from "./MobileFilterBox";
+import { MobileFilterBox } from "./MobileFilterBox";
 import { Button } from "@/components/ui/button";
-import { filterOptions } from "@/lib/enums";
+import { filterOptions, sortOptions } from "@/lib/enums";
 
 import { ArrowUpWideNarrow, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -31,40 +31,83 @@ type MobileFilterSortProps = {
       }[]
     >
   >;
+  setSort: React.Dispatch<React.SetStateAction<sortOptions>>;
+  sort: sortOptions;
 };
 
 export const MobileFilterSort = ({
   filter,
   setFilter,
-
   selected,
   setSelected,
+  setSort,
+  sort,
 }: MobileFilterSortProps) => {
   const [openSort, setOpenSort] = useState<boolean>(false);
   const [openFilter, setOpenFilter] = useState<boolean>(false);
   const [mobileFilter, setMobileFilter] = useState<filterOptions>(
     filterOptions.AUTHOR
   );
+
+  const handleSort = (selected: sortOptions) => {
+    console.log(selected);
+    setSort(selected);
+    setOpenSort(false);
+  };
   return (
     <>
       {openSort && (
-        <div className="fixed animate-in slide-in-from-bottom-5 fade-in-20 inset-0 z-0 w-full">
-          <ul className="absolute bottom-0 bg-white border-b border-zinc-200 shadaw-xl grid w-full gap-1 pb-20 px-20 pt-8">
+        <div className="fixed animate-in slide-in-from-bottom-5 fade-in-20 inset-0 z-0 w-full ">
+          <ul className="absolute bottom-0 bg-white border-t  border-b border-zinc-200 shadaw-xl grid w-full gap-1 pb-20 px-20 pt-8">
             <li>
               <Button
                 variant={"link"}
-                className="flex items-center w-full font-semibold  text-lg"
+                className={cn(
+                  "flex items-center w-full font-semibold  text-lg",
+                  { " bg-zinc-200": sort === sortOptions.POPULARITY }
+                )}
+                onClick={() => handleSort(sortOptions.POPULARITY)}
               >
-                link1
+                {sortOptions.POPULARITY}
               </Button>
             </li>
             <li className="my-1 h-px w-full bg-gray-300" />
             <li>
               <Button
                 variant={"link"}
-                className="flex items-center w-full font-semibold text-lg p-0 m-0 "
+                className={cn(
+                  "flex items-center w-full font-semibold  text-lg",
+                  { " bg-zinc-200": sort === sortOptions.NEWEST }
+                )}
+                onClick={() => handleSort(sortOptions.NEWEST)}
               >
-                link
+                {sortOptions.NEWEST}
+              </Button>
+            </li>
+            <li className="my-1 h-px w-full bg-gray-300" />
+            <li>
+              <Button
+                variant={"link"}
+                className={cn(
+                  "flex items-center w-full font-semibold  text-lg",
+                  { " bg-zinc-200": sort === sortOptions.ALPHABETICAL }
+                )}
+                onClick={() => handleSort(sortOptions.ALPHABETICAL)}
+              >
+                {sortOptions.ALPHABETICAL}
+              </Button>
+            </li>
+            <li className="my-1 h-px w-full bg-gray-300" />
+            <li>
+              <Button
+                variant={"link"}
+                className={cn(
+                  "flex items-center w-full font-semibold  text-lg",
+                  { " bg-zinc-200": sort === sortOptions.PRICE }
+                )}
+                onClick={() => handleSort(sortOptions.PRICE)}
+              >
+                {sortOptions.PRICE}
               </Button>
             </li>
           </ul>
@@ -97,7 +140,7 @@ export const MobileFilterSort = ({
           <div className="w-[63%] border-none">
             <div className="h-full pt-20">
               {mobileFilter === filterOptions.AUTHOR ? (
-                <MobileFilter
+                <MobileFilterBox
                   filter={filter}
                   setFilter={setFilter}
                   filterName={filterOptions.AUTHOR}
@@ -105,7 +148,7 @@ export const MobileFilterSort = ({
                   setSelected={setSelected}
                 />
               ) : mobileFilter === filterOptions.CATEGORY ? (
-                <MobileFilter
+                <MobileFilterBox
                   filter={filter}
                   setFilter={setFilter}
                   filterName={filterOptions.CATEGORY}
@@ -113,7 +156,7 @@ export const MobileFilterSort = ({
                   setSelected={setSelected}
                 />
               ) : mobileFilter === filterOptions.LANGUAGE ? (
-                <MobileFilter
+                <MobileFilterBox
                   filter={filter}
                   setFilter={setFilter}
                   filterName={filterOptions.LANGUAGE}

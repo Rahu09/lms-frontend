@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import BookServices from "@/services/BookServices";
+import { useAuthorization } from "@/context/AuthorizationProvider";
+import { Button } from "@/components/ui/button";
 interface BookInfoMainInfoProps {
   bookdata: {
     authorName: string;
@@ -17,70 +19,113 @@ interface BookInfoMainInfoProps {
   };
 }
 const BookInfoMainInfo = ({ bookdata }: BookInfoMainInfoProps) => {
-  console.log(bookdata);
   const bookId = bookdata.id;
-  console.log(bookId);
+  const auth = useAuthorization();
+
+  const { data: loanCountData } = useQuery({
+    queryKey: ["loanCount", bookId],
+    queryFn: () => BookServices.getLoanCount(bookId),
+  });
+  // Get reservation count for book
+  const { data: reservationCountData } = useQuery({
+    queryKey: ["reservationCount", 3],
+    queryFn: () => BookServices.getReservationCount(bookId),
+  });
 
   //get category/genre for book
   const { data, status, error } = useQuery({
     queryKey: ["bookcategory", bookId],
     queryFn: () => BookServices.getCategoryByBookId(bookId),
   });
+  const availableBooks = bookdata.bookCount - loanCountData!;
 
   if (status === "pending") return <div>Loading...</div>;
   if (status === "error")
     return <div>An error has occoured {JSON.stringify(error)}</div>;
 
   console.log("category log: ", data);
+  //get user book limit
+  const bookLimit: number = auth.getAuthData?.noOfBooksLoan ?? 0;
+  const buttonText = availableBooks! > 0 ? "Borrow" : "Reserve";
 
   return (
-    <div className="ml-12 p-5 flex flex-col border-black rounded-xl border-4 ">
-      <div className="font-bold justify-center align-middle text-4xl">
-        {bookdata.title}
+    <div className="mt-4 p-5 flex flex-col h-[90%] w-full">
+      <div className="ml-4 flex flex-col">
+        <p className=" font-bold text-4xl text-gray-600">{bookdata.title}</p>
+        <p className="text-gray-400 text-lg mt-4">
+          {data.map((ele) => (
+            <p>{ele}</p>
+          ))}
+        </p>
       </div>
-      <br />
-      <br />
-      <p>
-        <span className="font-bold">Description:</span> {bookdata.description}
-      </p>
-      <br />
-      <p>
-        <span className="font-bold">Genre: </span>
-        {data.map((cat) => (
-          <span className=" inline">{cat + ", "}</span>
-        ))}
-      </p>
-      <br />
-      <p>
-        <span className="font-bold">Language:</span> {bookdata.language}
-      </p>
-      <br />
-      <p>
-        <span className="font-bold">Author: </span>
-        {bookdata.authorName}
-      </p>
-      <br />
-      <p>
-        <span className="font-bold">Edition:</span> {bookdata.edition}
-      </p>
-      <br />
-      <p>
-        <span className="font-bold">Pages:</span> {bookdata.pages}
-      </p>
-      <br />
-      <p>
-        <span className="font-bold">Publisher:</span> {bookdata.publisherName}
-      </p>
-      <br />
-      <p>
-        <span className="font-bold">ISBN:</span> {bookdata.isbn}
-      </p>
-      <br />
-      {/* add the wikipedia url of book  {data.link} */}
-      <p>
-        <span className="font-bold">Wiki:</span>
-      </p>
-      <br />
+      <div className="border-b-2 mt-4 border-gray-400 w-full"></div>
+      <div className="">
+        <div className="flex flex-row justify-between">
+          <p className="font-bold ml-4 pt-6 text-3xl text-gray-600">
+            ₹ {bookdata.cost}
+          </p>
+
+          <Button className="mt-5 bg-gray-900" disabled={bookLimit === 5}>
+            {buttonText}
+          </Button>
+          {bookLimit === 5 ? (
+            <p className="text-red-600">
+              User borrow limit of 5 books is reached. Please return a book to
+              borrow this.
+            </p>
+          ) : null}
+        </div>
+        <div className="">
+          <div className="ml-4 ">
+            <p className="text-2xl mt-6 text-gray-600 font-bold underline underline-offset-4">
+              Discription
+            </p>
+            <p className="pl-1 mt-2 text-lg text-gray-500 font-semibold">
+              {bookdata.description}
+            </p>
+          </div>
+          <div className="border-8 rounded-lg p-4 mt-8">
+            <div className="flex flex-col my-2 justify-start align-middle ">
+              <p className="text-lg text-gray-600 font-bold">Language:</p>
+              <p className="text-gray-500 text-md font-semibold">
+                {bookdata.language}
+              </p>
+            </div>
+            <div className="flex flex-col my-3 justify-start align-middle ">
+              <p className="text-lg text-gray-600 font-bold">Author Name:</p>
+              <p className="text-gray-500 text-md font-semibold">
+                {bookdata.authorName}
+              </p>
+            </div>
+            <div className="flex flex-col my-3 justify-start align-middle ">
+              <p className="text-lg text-gray-600 font-bold">Edition:</p>
+              <p className=" text-gray-500 text-md font-semibold">
+                {bookdata.edition}
+              </p>
+            </div>
+            <div className="flex flex-col my-3 justify-start align-middle ">
+              <p className="text-lg text-gray-600 font-bold">Publisher:</p>
+              <p className=" text-gray-500 text-md font-semibold">
+                {bookdata.publisherName}
+              </p>
+            </div>
+            <div className="flex flex-col my-3 justify-start align-middle ">
+              <p className="text-lg text-gray-600 font-bold">ISBN:</p>
+              <p className=" text-gray-500 text-md font-semibold">
+                {bookdata.isbn}
+              </p>
+            </div>
+            <div className="flex flex-col my-3 justify-start align-middle ">
+              <p className="text-lg text-gray-600 font-bold">
+                {availableBooks! > 0 ? "Availability:" : "Reservation:"}
+              </p>
+              <p className=" text-gray-500 text-md font-semibold">
+                {availableBooks! > 0 ? availableBooks : reservationCountData}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -8,7 +8,8 @@ import {
 import { Button } from "./ui/button";
 import { Icons } from "./Icons";
 import { Gem } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import AuthenticationService from "@/services/AuthenticationService";
 
 interface UserAccountNavProps {
   email: string | undefined;
@@ -17,6 +18,14 @@ interface UserAccountNavProps {
 }
 
 const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
+  const navigate = useNavigate();
+  const logout = async () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    AuthenticationService.logout();
+    navigate("/");
+    window.location.reload();
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="overflow;-visible">
@@ -55,18 +64,18 @@ const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/booklist">BookList</Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
           <Link to="/pricing">
-            Upgrade <Gem className="text-blue-600 h-4 w-4 ml-1.5" />
+            Profile <Gem className="text-blue-600 h-4 w-4 ml-1.5" />
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem className="cursor-pointer" onClick={logout}>
           <Link to={"/"}>Log out</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

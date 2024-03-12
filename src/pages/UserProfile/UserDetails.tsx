@@ -1,39 +1,34 @@
-import UserServices from "@/services/UserServices";
-import { useQuery } from "@tanstack/react-query";
+import { useAuthorization } from "@/context/AuthorizationProvider";
+
 const UserDetails = () => {
-  const email = "";
-  const { data, status, error } = useQuery({
-    queryKey: ["bookcategory", email],
-    queryFn: () => UserServices.getUserByEmail(email),
-  });
+  //get user data from context
 
-  if (status === "pending") return <div>Loading...</div>;
-  if (status === "error")
-    return <div>An error has occoured {JSON.stringify(error)}</div>;
-
-  console.log("category log: ", data);
+  const auth = useAuthorization();
+  const userdata = auth.getAuthData;
+  console.log("userdata log: ", userdata);
   return (
     <>
-      <p>
-        First Name: <span className="font-normal">{}</span>
+      <p className="font-bold">
+        First Name: <span className="font-normal">{userdata?.firstName}</span>
       </p>
-      <p>
-        Last Name: <span className="font-normal">{}</span>
+      <p className="font-bold">
+        Last Name: <span className="font-normal">{userdata?.lastName}</span>
       </p>
-      <p>
-        Email: <span className="font-normal">{}</span>
+      <p className="font-bold">
+        Email: <span className="font-normal">{userdata?.email}</span>
       </p>
-      <p>
-        Contact: <span className="font-normal">{}</span>
+      <p className="font-bold">
+        Contact: <span className="font-normal">{userdata?.contactNo}</span>
       </p>
-      <p>
-        Address: <span className="font-normal">{}</span>
+      <p className="font-bold">
+        Address: <span className="font-normal">{userdata?.address}</span>
       </p>
-      <p>
-        Gender: <span className="font-normal">{}</span>
+      <p className="font-bold">
+        Gender: <span className="font-normal">{userdata?.gender}</span>
       </p>
-      <p>
-        No of Books currently Borrowed: <span className="font-normal">{}</span>
+      <p className="font-bold">
+        No of Books currently Borrowed:{" "}
+        <span className="font-normal">{userdata?.noOfBooksLoan}</span>
       </p>
     </>
   );

@@ -1,35 +1,41 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import BookServices from "@/services/BookServices";
-import { useQuery } from "@tanstack/react-query";
+import BookServices, { Page, bookResponse } from "@/services/BookServices";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { BookCard } from "./BookCard";
-import { ArrowUpWideNarrow, Filter, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { useEffect, useState } from "react";
-import { useAuthorization } from "@/context/AuthorizationProvider";
+import { useState } from "react";
 import { Typography } from "@mui/material";
 import { Button } from "@/components/ui/button";
 import { FilterBox } from "./FilterBox";
-import { filterOptions } from "@/lib/enums";
-import { MobileFilter } from "./MobileFilterBox";
-import { cn } from "@/lib/utils";
+import { filterOptions, sortOptions } from "@/lib/enums";
 import { MobileFilterSort } from "./MobileFilterSort";
 
 export const BookList = () => {
-  const { data, status, error } = useQuery({
-    queryKey: ["books"],
-    queryFn: () => BookServices.getAllBooks(1),
+  const {
+    status,
+    error,
+    data,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery<Page, Error>({
+    queryKey: ["posts"],
+    getNextPageParam: (lastPage: Page) => lastPage.nextPage,
+    /**
+     * Explaining comment
+     *
+     * @ts-expect-error */
+    queryFn: ({ pageParam = 0 }: { pageParam: number }) =>
+      BookServices.getAllBooks(pageParam),
   });
+  console.log("bookList", data);
 
-  const [sort, setSort] = useState<string>();
-  const [openSort, setOpenSort] = useState<boolean>(false);
-  const [openFilter, setOpenFilter] = useState<boolean>(false);
-  const [mobileFilter, setMobileFilter] = useState<filterOptions>(
-    filterOptions.AUTHOR
-  );
+  const [sort, setSort] = useState<sortOptions>(sortOptions.ALPHABETICAL);
   const [filter, setFilter] = useState<
     {
       type: filterOptions;
@@ -73,19 +79,32 @@ export const BookList = () => {
     },
   ]);
 
-  useEffect(() => {
-    console.log("hii");
-  }, [selected, setSelected]);
-
   // const auth = useAuthorization();
 
-  // console.log(data);
-  // console.log(auth.getAuthData);
   console.log(selected);
-  console.log(mobileFilter);
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setSort(event.target.value);
+  const handleChange = (e: SelectChangeEvent) => {
+    const selected =
+      sortOptions.ALPHABETICAL === e.target.value
+        ? sortOptions.ALPHABETICAL
+        : sortOptions.NEWEST === e.target.value
+        ? sortOptions.NEWEST
+        : sortOptions.POPULARITY === e.target.value
+        ? sortOptions.POPULARITY
+        : sortOptions.PRICE === e.target.value
+        ? sortOptions.PRICE
+        : sortOptions.ALPHABETICAL;
+    setSort(selected);
+  };
+
+  const handleRemoveFilter = (index: number, ind: number) => {
+    const tempSelected = [...selected];
+    tempSelected[index] = {
+      ...tempSelected[index],
+      state: [...tempSelected[index].state],
+    };
+    tempSelected[index].state[ind] = false;
+    setSelected(tempSelected);
   };
 
   if (status === "pending") return <div>Loading...</div>;
@@ -96,6 +115,7 @@ export const BookList = () => {
       <div className="flex flex-col">
         <div className=" w-[100%] h-[45vh] bg-[#dbeafe] flex justify-center items-center">
           banner
+          {/* <Test /> */}
         </div>
         <div>
           <div>
@@ -144,7 +164,8 @@ export const BookList = () => {
                             <div>{`${selected[index].type}:${filter[index].filterElement[ind]}`}</div>
                             <Button
                               variant="ghost"
-                              className="p-0 m-0 pl-2 hover:bg-transparent "
+                              className="p-0 m-0 pl-2 hover:bg-transparent"
+                              onClick={() => handleRemoveFilter(index, ind)}
                             >
                               <X size={"16px"} color="gray" />
                             </Button>
@@ -165,12 +186,18 @@ export const BookList = () => {
                   label="Select Sorting Options"
                   onChange={handleChange}
                 >
-                  <MenuItem value="">
-                    <em>None</em>
+                  <MenuItem value={sortOptions.ALPHABETICAL}>
+                    {sortOptions.ALPHABETICAL}
                   </MenuItem>
-                  <MenuItem value={10}>Alphabetical</MenuItem>
-                  <MenuItem value={20}>Popularity</MenuItem>
-                  <MenuItem value={30}>Newest</MenuItem>
+                  <MenuItem value={sortOptions.POPULARITY}>
+                    {sortOptions.POPULARITY}
+                  </MenuItem>
+                  <MenuItem value={sortOptions.NEWEST}>
+                    {sortOptions.NEWEST}
+                  </MenuItem>
+                  <MenuItem value={sortOptions.PRICE}>
+                    {sortOptions.PRICE}
+                  </MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -203,9 +230,24 @@ export const BookList = () => {
               </div>
               {/* book container */}
               <div className=" w-full h-fit flex flex-row flex-wrap justify-around gap-0 sm:gap-2 items-center pt-2 border-t-[1px] border-gray-300 ">
-                {Array.from({ length: 20 }).map((_, ind) => (
-                  <BookCard key={ind} />
-                ))}
+                {data &&
+                  data.pages.map((page) =>
+                    /**
+                     * Explaining comment
+                     *
+                     * @ts-expect-error */
+                    page.data.map((book: bookResponse) => (
+                      <BookCard key={book.id} bookData={book} />
+                    ))
+                  )}
+                {hasNextPage && (
+                  <button
+                    disabled={isFetchingNextPage}
+                    onClick={() => fetchNextPage()}
+                  >
+                    Load More
+                  </button>
+                )}
               </div>
             </div>
             <MobileFilterSort
@@ -213,112 +255,9 @@ export const BookList = () => {
               setFilter={setFilter}
               selected={selected}
               setSelected={setSelected}
+              setSort={setSort}
+              sort={sort}
             />
-            {/* {openSort && (
-              <div className="fixed animate-in slide-in-from-bottom-5 fade-in-20 inset-0 z-0 w-full">
-                <ul className="absolute bottom-0 bg-white border-b border-zinc-200 shadaw-xl grid w-full gap-1 pb-20 px-20 pt-8">
-                  <li>
-                    <Button
-                      variant={"link"}
-                      className="flex items-center w-full font-semibold  text-lg"
-                    >
-                      link1
-                    </Button>
-                  </li>
-                  <li className="my-1 h-px w-full bg-gray-300" />
-                  <li>
-                    <Button
-                      variant={"link"}
-                      className="flex items-center w-full font-semibold text-lg p-0 m-0 "
-                    >
-                      link
-                    </Button>
-                  </li>
-                </ul>
-              </div>
-            )}
-            {openFilter && (
-              <div className=" flex flex-row fixed bg-white animate-in slide-in-from-bottom-5 fade-in-20 inset-0 z-0 w-full">
-                <div className=" w-[35%] bg-slate-200 border-none">
-                  <ul className=" shadaw-xl flex flex-col justify-center items-center w-full gap-1 pt-20">
-                    {filter.map((ele) => (
-                      <>
-                        <li className="w-full m-0 p-0">
-                          <Button
-                            variant={"link"}
-                            className={cn(
-                              "flex items-center w-full font-semibold text-lg focus:no-underline focus:bg-white rounded-none h-14",
-                              {
-                                " bg-white": mobileFilter === ele.type,
-                              }
-                            )}
-                            onClick={() => setMobileFilter(ele.type)}
-                          >
-                            {ele.type}
-                          </Button>
-                        </li>
-                      </>
-                    ))}
-                  </ul>
-                </div>
-                <div className="w-[63%] border-none">
-                  <div className="h-full pt-20">
-                    {mobileFilter === filterOptions.AUTHOR ? (
-                      <MobileFilter
-                        filter={filter}
-                        setFilter={setFilter}
-                        filterName={filterOptions.AUTHOR}
-                        selected={selected}
-                        setSelected={setSelected}
-                      />
-                    ) : mobileFilter === filterOptions.CATEGORY ? (
-                      <MobileFilter
-                        filter={filter}
-                        setFilter={setFilter}
-                        filterName={filterOptions.CATEGORY}
-                        selected={selected}
-                        setSelected={setSelected}
-                      />
-                    ) : mobileFilter === filterOptions.LANGUAGE ? (
-                      <MobileFilter
-                        filter={filter}
-                        setFilter={setFilter}
-                        filterName={filterOptions.LANGUAGE}
-                        selected={selected}
-                        setSelected={setSelected}
-                      />
-                    ) : (
-                      <div> NO filter Selected</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className="lg:hidden h-16 w-full bg-white sticky bottom-0 flex flex-row justify-between items-center border-solid border-t-2 text-slate-400">
-              <Button
-                className="bg-transparent text-black w-[50%] h-full hover:bg-white rounded-none"
-                onClick={() => {
-                  setOpenFilter((old) => !old);
-                  setOpenSort(false);
-                }}
-              >
-                <Filter />
-                filter
-              </Button>
-              <div className="p-0 m-0 text-[3rem]  text-center  text-slate-400">
-                |
-              </div>
-              <Button
-                className="bg-transparent text-black w-[50%] h-full hover:bg-white rounded-none"
-                onClick={() => {
-                  setOpenSort((old) => !old);
-                  setOpenFilter(false);
-                }}
-              >
-                <ArrowUpWideNarrow />
-                sort
-              </Button>
-            </div> */}
           </div>
         </div>
       </div>
