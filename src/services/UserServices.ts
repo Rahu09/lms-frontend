@@ -30,39 +30,53 @@ export type userResponse = {
   imageURL: string;
 };
 
-type BorrowHistoryItem = {
-  id: number;
+export type submitBook = {
+  id: string;
   issueDate: string;
-  returnDate: string | null;
+  returnDate: string;
   status: string;
-  book: string;
-  formattedIssueDate: string;
-  formattedReturnDate: string | null;
+  userId: number;
+  bookId: number;
+  submittedAmount: number;
+  returnAmount: number;
 };
 
+// type BorrowHistoryItem = {
+//   id: number;
+//   issueDate: string;
+//   returnDate: string | null;
+//   status: string;
+//   book: string;
+//   formattedIssueDate: string;
+//   formattedReturnDate: string | null;
+// };
+
 type ReservationHistoryItem = {
-  id: null;
-  user: null;
-  book: null;
-  issueTimestamp: string;
+  bookId: number;
   bookName: string;
+  id: number;
+  imgUrl: string;
+  issueTimestamp: string;
   formattedIssueDate: string;
 };
 
 type UserFineItem = {
-  id: number;
   book: string;
-  status: string;
-  issueDate: string;
-  returnDate: string | null;
+  bookId: number;
   fineAmount: number;
+  id: number;
+  imageUrl: string;
+  issueDate: string;
+  returnDate: null;
+  status: string;
   user: string;
+
   formattedIssueDate: string;
   formattedReturnDate: string | null;
 };
 type UserFineResponse = UserFineItem[];
 type ReservationHistoryResponse = ReservationHistoryItem[];
-type LoanHistoryResponse = BorrowHistoryItem[];
+// type LoanHistoryResponse = BorrowHistoryItem[];
 
 class UserServices {
   async getUserLoanHistory(id: number) {
@@ -108,27 +122,27 @@ class UserServices {
     return fineHistory;
   };
 
-  getBorrowHistory: (id: number) => Promise<LoanHistoryResponse> = async (
-    id
-  ) => {
-    const response = await axios.get(
-      `${BASE_REST_API_URL}/userLoanHistory/${id}`,
-      config
-    );
+  // getBorrowHistory: (id: number) => Promise<LoanHistoryResponse> = async (
+  //   id
+  // ) => {
+  //   const response = await axios.get(
+  //     `${BASE_REST_API_URL}/userLoanHistory/${id}`,
+  //     config
+  //   );
 
-    const loanHistory: BorrowHistoryItem[] = response.data.map(
-      (item: BorrowHistoryItem) => ({
-        ...item,
-        formattedIssueDate: new Date(item.issueDate).toLocaleDateString(
-          "en-GB"
-        ),
-        formattedReturnDate: item.returnDate
-          ? new Date(item.returnDate).toLocaleDateString("en-GB")
-          : null,
-      })
-    );
-    return loanHistory;
-  };
+  //   const loanHistory: BorrowHistoryItem[] = response.data.map(
+  //     (item: BorrowHistoryItem) => ({
+  //       ...item,
+  //       formattedIssueDate: new Date(item.issueDate).toLocaleDateString(
+  //         "en-GB"
+  //       ),
+  //       formattedReturnDate: item.returnDate
+  //         ? new Date(item.returnDate).toLocaleDateString("en-GB")
+  //         : null,
+  //     })
+  //   );
+  //   return loanHistory;
+  // };
 
   async updateUser(userData: { id: number; requestData: userRequest }) {
     try {
@@ -160,6 +174,17 @@ class UserServices {
       );
       return reservationHistory;
     };
+  submitBook: (loanId: number, amount: number) => Promise<submitBook> = async (
+    loanId,
+    amount
+  ) => {
+    const response = await axios.post(
+      `${BASE_REST_API_URL}/submitBook/${loanId}?fineAmount=${amount}`,
+      {},
+      config
+    );
+    return response.data;
+  };
 }
 
 export default new UserServices();

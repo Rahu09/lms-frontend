@@ -7,6 +7,8 @@ export const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  console.log("email " + email, "pass " + password);
+
   const handlesubmit = (
     e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
   ) => {

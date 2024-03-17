@@ -37,16 +37,16 @@ export const Signup = () => {
 
   const handlesubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    console.log(
-      email,
-      password,
-      role,
-      gender,
-      firstName,
-      lastName,
-      phone,
-      passwordConfirm
-    );
+    // console.log(
+    //   email,
+    //   password,
+    //   role,
+    //   gender,
+    //   firstName,
+    //   lastName,
+    //   phone,
+    //   passwordConfirm
+    // );
     const requestData = {
       email: email,
       password: password,

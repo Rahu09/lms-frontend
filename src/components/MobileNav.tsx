@@ -1,10 +1,13 @@
 "use client";
 
+import AuthenticationService from "@/services/AuthenticationService";
+import BookServices from "@/services/BookServices";
 import { ArrowRight, Menu } from "lucide-react";
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
+  const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setOpen] = useState<boolean>(false);
 
@@ -12,12 +15,17 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
 
   const pathname = location.pathname;
 
-  // useEffect(() => {
-  //   if (isOpen) toggleOpen();
-  // }, [isOpen, pathname]);
+  useEffect(() => {
+    if (isOpen) toggleOpen();
+  }, [pathname]);
 
   const closeOnCurrent = (href: string) => {
     if (pathname === href) toggleOpen();
+  };
+
+  const haldleLogout = () => {
+    AuthenticationService.logout();
+    window.location.reload();
   };
 
   return (
@@ -31,9 +39,9 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
               <>
                 <li>
                   <Link
-                    onClick={() => closeOnCurrent("/sign-up")}
+                    onClick={() => closeOnCurrent("/login")}
                     className="flex items-center w-full font-semibold text-green-600"
-                    to="/sign-up"
+                    to="/login"
                   >
                     Get started
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -42,15 +50,15 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
                 <li className="my-3 h-px w-full bg-gray-300" />
                 <li>
                   <Link
-                    onClick={() => closeOnCurrent("/sign-in")}
+                    onClick={() => closeOnCurrent("/booklist")}
                     className="flex items-center w-full font-semibold"
-                    to="/sign-in"
+                    to="/booklist"
                   >
-                    Sign in
+                    Book List
                   </Link>
                 </li>
                 <li className="my-3 h-px w-full bg-gray-300" />
-                <li>
+                {/* <li>
                   <Link
                     onClick={() => closeOnCurrent("/pricing")}
                     className="flex items-center w-full font-semibold"
@@ -58,7 +66,7 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
                   >
                     Pricing
                   </Link>
-                </li>
+                </li> */}
               </>
             ) : (
               <>
@@ -66,18 +74,19 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
                   <Link
                     onClick={() => closeOnCurrent("/dashboard")}
                     className="flex items-center w-full font-semibold"
-                    to="/dashboard"
+                    to="/booklist"
                   >
-                    Dashboard
+                    BookList
                   </Link>
                 </li>
                 <li className="my-3 h-px w-full bg-gray-300" />
                 <li>
                   <Link
                     className="flex items-center w-full font-semibold"
-                    to="/sign-out"
+                    to="/"
+                    onClick={haldleLogout}
                   >
-                    Sign out
+                    Log out
                   </Link>
                 </li>
               </>

@@ -7,6 +7,7 @@ class AuthenticationService {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   };
+
   async register(requestData: unknown) {
     const response = await axios.post(
       `${this.BASE_REST_API_URL}/register`,
@@ -41,6 +42,8 @@ class AuthenticationService {
   }
 
   async logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
     const response = await axios.get(
       `${this.BASE_REST_API_URL}/logout`,
       this.config

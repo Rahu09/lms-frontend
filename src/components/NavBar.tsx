@@ -11,14 +11,14 @@ const Navbar = () => {
   const user = useAuthorization().getAuthData;
 
   return (
-    <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
+    <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/60 backdrop-blur-lg transition-all">
       <MaxWidthWrapper>
         <div className="flex h-14 items-center justify-between border-b border-zinc-200">
-          <a href="/" className="flex z-40 font-semibold">
+          <Link to="/" className="flex z-40 font-semibold">
             <span className="">
               <img src="/logo.png" className="h-[1.8rem]" alt="" />
             </span>
-          </a>
+          </Link>
 
           <MobileNav isAuth={user ? true : false} />
 
@@ -39,15 +39,15 @@ const Navbar = () => {
                     variant: "ghost",
                     size: "sm",
                   })}
-                  to="/login"
+                  to="/booklist"
                 >
-                  Sign in
+                  Book List
                 </Link>
                 <Link
                   className={buttonVariants({
                     size: "sm",
                   })}
-                  to="/booklist"
+                  to="/login"
                 >
                   Get started <ArrowRight className="ml-1.5 h-5 w-5" />
                 </Link>

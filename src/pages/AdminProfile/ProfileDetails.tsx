@@ -1,8 +1,6 @@
 import { useAuthorization } from "@/context/AuthorizationProvider";
 
-const UserDetails = () => {
-  //get user data from context
-
+const ProfileDetails = () => {
   const auth = useAuthorization();
   const userdata = auth.getAuthData;
   console.log("userdata log: ", userdata);
@@ -26,12 +24,8 @@ const UserDetails = () => {
       <p className="font-bold">
         Gender: <span className="font-normal">{userdata?.gender}</span>
       </p>
-      <p className="font-bold">
-        No of Books currently Borrowed:{" "}
-        <span className="font-normal">{userdata?.noOfBooksLoan}</span>
-      </p>
     </>
   );
 };
 
-export default UserDetails;
+export default ProfileDetails;

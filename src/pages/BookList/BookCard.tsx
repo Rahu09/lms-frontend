@@ -6,20 +6,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { bookResponse } from "@/services/BookServices";
+import { useNavigate } from "react-router-dom";
 type BookCardProps = {
   bookData: bookResponse;
 };
 export function BookCard({ bookData }: BookCardProps) {
+  const navigate = useNavigate();
+  const handleSubmit = () => {
+    navigate(`/bookinfo/${bookData.id}`);
+  };
   return (
-    <Card className="flex flex-col justify-between mb-8 w-[45vw] max-w-[24rem] lg:w-[24%] lg:h-[29rem] xl:h-[33rem] p-3 bg-transparent">
-      <CardContent className="w-full p-0 m-0 hover:p-3 transition-all ease-in-out">
-        <div className="w-full flex justify-center">
-          <img
-            src={"data:image/jpeg;base64," + bookData.imageURL}
-            alt="book-img"
-            className=" w-full"
-          />
-        </div>
+    <Card
+      onClick={handleSubmit}
+      className="flex flex-col h-[30rem] w-[15rem] justify-between border-0 mb-3 mx-1"
+    >
+      <CardContent className="w-full p-0 m-0  transition-all ease-in-out overflow-hidden group rounded-lg">
+        <img
+          className="transition-transform duration-700 transform group-hover:scale-[1.2]"
+          src={"data:image/jpeg;base64," + bookData.imageURL}
+          alt="book-img"
+        />
       </CardContent>
       <CardFooter className="flex flex-col p-2">
         <CardTitle className="text-md flex flex-row w-full justify-between align-top">

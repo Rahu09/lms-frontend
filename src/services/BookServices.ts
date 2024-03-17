@@ -44,6 +44,12 @@ export interface Page {
   prevPage: number | undefined;
 }
 
+export type filterRequestDataType = {
+  authorList: string[];
+  categoryList: string[];
+  languageList: string[];
+};
+
 class BookServices {
   async getAllBooks(page: number): Promise<Page> {
     const response = await axios.get(
@@ -58,6 +64,35 @@ class BookServices {
       nextPage: nextPage,
       prevPage: prevPage,
     };
+  }
+
+  async getBookFilterPage(
+    page: number,
+    filterRequestData: filterRequestDataType
+  ): Promise<Page> {
+    const response = await axios.post(
+      `http://localhost:8080/api/v1/book/bookFilter?size=${20}&page=${page}`,
+      filterRequestData
+    );
+    const nextPage = page < response.data.totalPages - 1 ? page + 1 : undefined;
+    const prevPage = page > 0 ? page - 1 : undefined;
+    return {
+      data: response.data.content,
+      nextPage: nextPage,
+      prevPage: prevPage,
+    };
+  }
+
+  async getBooksByFilter(
+    filterRequestData: filterRequestDataType
+  ): Promise<bookResponse[]> {
+    console.log(filterRequestData);
+
+    const response = await axios.post(
+      `http://localhost:8080/api/v1/book/bookFilter`,
+      filterRequestData
+    );
+    return response.data.content;
   }
 
   async deleteBook(id: number) {
@@ -113,6 +148,36 @@ class BookServices {
   getReservationCount: (id: number) => Promise<number> = async (id) => {
     const response = await axios.get(
       `${BASE_REST_API_URL}/bookreservationcount/${id}`,
+      config
+    );
+    return response.data;
+  };
+
+  loanBook: (userId: number, bookId: number) => Promise<unknown> = async (
+    userId,
+    bookId
+  ) => {
+    const response = await axios.post(
+      `${BASE_REST_API_URL}/borrow/${userId}/${bookId}`,
+      {},
+      config
+    );
+    return response.data;
+  };
+  reserveBook: (userId: number, bookId: number) => Promise<unknown> = async (
+    userId,
+    bookId
+  ) => {
+    const response = await axios.post(
+      `${BASE_REST_API_URL}/reserve/${userId}/${bookId}`,
+      {},
+      config
+    );
+    return response.data;
+  };
+  searchBook: (search: string) => Promise<bookResponse[]> = async (search) => {
+    const response = await axios.get(
+      `${BASE_REST_API_URL}/search/${search}`,
       config
     );
     return response.data;

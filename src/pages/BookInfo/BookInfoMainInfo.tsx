@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import BookServices from "@/services/BookServices";
 import { useAuthorization } from "@/context/AuthorizationProvider";
 import { Button } from "@/components/ui/button";
+import { Loading } from "@/components/Loading";
+import { ErrorPage } from "@/components/ErrorPage";
 interface BookInfoMainInfoProps {
   bookdata: {
     authorName: string;
@@ -39,33 +41,54 @@ const BookInfoMainInfo = ({ bookdata }: BookInfoMainInfoProps) => {
   });
   const availableBooks = bookdata.bookCount - loanCountData!;
 
-  if (status === "pending") return <div>Loading...</div>;
-  if (status === "error")
-    return <div>An error has occoured {JSON.stringify(error)}</div>;
+  if (status === "pending")
+    return (
+      <div className="flex justify-center items-center h-screen w-screen">
+        <Loading />
+      </div>
+    );
+  if (status === "error") return <ErrorPage />;
 
   console.log("category log: ", data);
   //get user book limit
   const bookLimit: number = auth.getAuthData?.noOfBooksLoan ?? 0;
   const buttonText = availableBooks! > 0 ? "Borrow" : "Reserve";
 
+  const handleClick = async () => {
+    if (availableBooks > 0) {
+      await BookServices.loanBook(auth.getAuthData.id, bookId).then(() =>
+        console.log("book loaned")
+      );
+    } else {
+      await BookServices.reserveBook(auth.getAuthData.id, bookId).then(() =>
+        console.log("book reserved")
+      );
+    }
+    alert("book loaned");
+  };
+
   return (
     <div className="mt-4 p-5 flex flex-col h-[90%] w-full">
       <div className="ml-4 flex flex-col">
-        <p className=" font-bold text-4xl text-gray-600">{bookdata.title}</p>
+        <p className=" font-bold text-4xl text-violet-950">{bookdata.title}</p>
         <p className="text-gray-400 text-lg mt-4">
           {data.map((ele) => (
             <p>{ele}</p>
           ))}
         </p>
       </div>
-      <div className="border-b-2 mt-4 border-gray-400 w-full"></div>
+      <div className="border-b-2 mt-4 border-violet-400 w-full"></div>
       <div className="">
         <div className="flex flex-row justify-between">
           <p className="font-bold ml-4 pt-6 text-3xl text-gray-600">
             ₹ {bookdata.cost}
           </p>
 
-          <Button className="mt-5 bg-gray-900" disabled={bookLimit === 5}>
+          <Button
+            className="mt-5 bg-violet-950"
+            disabled={bookLimit === 5}
+            onClick={handleClick}
+          >
             {buttonText}
           </Button>
           {bookLimit === 5 ? (
@@ -84,7 +107,7 @@ const BookInfoMainInfo = ({ bookdata }: BookInfoMainInfoProps) => {
               {bookdata.description}
             </p>
           </div>
-          <div className="border-8 rounded-lg p-4 mt-8">
+          <div className="border-8 rounded-lg bg-violet-50 border-violet-100 p-4 mt-8">
             <div className="flex flex-col my-2 justify-start align-middle ">
               <p className="text-lg text-gray-600 font-bold">Language:</p>
               <p className="text-gray-500 text-md font-semibold">

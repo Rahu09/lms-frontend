@@ -10,24 +10,40 @@ import {
 
 export function Hero() {
   const plugin = React.useRef(
-    Autoplay({ delay: 4000, stopOnInteraction: true })
+    Autoplay({ delay: 2000, stopOnInteraction: true })
   );
+  const images = [
+    "/c1.png",
+    "/c2.png",
+    "/c3.png",
+    "/c4.png",
+    "/c5.png",
+    "/c6.png",
+    "/c7.png",
+  ];
 
   return (
-    <div className="top-0">
+    <div className="top-0 w-[98vw] lg:px-[2%] rounded-lg flex justify-center">
       <Carousel
         plugins={[plugin.current]}
-        className=" max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-[90rem] bg-red-500 rounded-md"
+        className="rounded-lg "
         onMouseEnter={plugin.current.stop}
         onMouseLeave={plugin.current.play}
       >
         <CarouselContent>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <CarouselItem key={index}>
-              <div className="p-1">
-                <Card className="">
-                  <CardContent className="flex aspect-square items-center w-[80vw] h-[50vh] justify-center p-6 md:h-[38rem] lg:h-[46rem]">
-                    <span className="text-4xl font-semibold">{index + 1}</span>
+          {images.map((ele, index) => (
+            <CarouselItem
+              key={index}
+              className="flex justify-center items-center"
+            >
+              <div className="p-1 w-full">
+                <Card className="flex justify-center items-center bg-violet-100 pb-4 ">
+                  <CardContent className="flex items-center lg:w-[94%] h-[50vh] justify-center md:h-[38rem] lg:h-[46rem] overflow-hidden ">
+                    <img
+                      src={ele}
+                      alt=""
+                      className="p-0 m-0 w-full h-full rounded-lg object-cover object-center"
+                    />
                   </CardContent>
                 </Card>
               </div>

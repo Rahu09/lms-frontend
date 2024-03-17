@@ -76,9 +76,14 @@ export const FilterBox = ({
           placeholder="Type to Add Filter"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className=" bg-indigo-50 border-gray-300"
+          className=" bg-violet-50 border-violet-300 text-sm"
         />
-        <Button onClick={addFilter}>Add</Button>
+        <Button
+          className="text-sm bg-violet-950 hover:bg-violet-800"
+          onClick={addFilter}
+        >
+          Add
+        </Button>
       </div>
       <div className="mt-5">
         {filter[filterIndex].filterElement.map((ele, ind) => (
@@ -87,10 +92,11 @@ export const FilterBox = ({
               id={ind.toString()}
               checked={selected[selectedIndex].state[ind]}
               onCheckedChange={() => handleChecked(ind)}
+              className=" "
             />
             <label
               htmlFor="terms1"
-              className="text-md leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               {ele}
             </label>

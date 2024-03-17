@@ -7,6 +7,13 @@ const config = {
   },
 };
 
+type CategoryResponseitem = {
+  id: number;
+  category: string;
+  bookList: null;
+};
+export type CategoryResponse = CategoryResponseitem[];
+
 class AdminServices {
   async getCategory() {
     try {

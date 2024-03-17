@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import BookServices from "@/services/BookServices";
 import { useAuthorization } from "@/context/AuthorizationProvider";
+import { Loading } from "@/components/Loading";
+import { ErrorPage } from "@/components/ErrorPage";
 interface Props {
   cost: number;
   bookId: number;
@@ -36,17 +38,23 @@ const BookInfoSideInfo = ({ cost, bookId, bookCount }: Props) => {
 
   //get user details from userid, get userbookloan count
 
-  if (loanCountStatus === "pending") return <div>Loading...</div>;
-  if (loanCountStatus === "error")
-    return <div>An error has occurred {JSON.stringify(loanCountError)}</div>;
+  if (loanCountStatus === "pending")
+    return (
+      <div className="flex justify-center items-center h-screen w-screen">
+        <Loading />
+      </div>
+    );
+  if (loanCountStatus === "error") return <ErrorPage />;
 
   console.log("loanCountData log: ", loanCountData);
 
-  if (reservationCountStatus === "pending") return <div>Loading...</div>;
-  if (reservationCountStatus === "error")
+  if (reservationCountStatus === "pending")
     return (
-      <div>An error has occurred {JSON.stringify(reservationCountError)}</div>
+      <div className="flex justify-center items-center h-screen w-screen">
+        <Loading />
+      </div>
     );
+  if (reservationCountStatus === "error") return <ErrorPage />;
   console.log("reservationCountData log: ", reservationCountData);
 
   const availableBooks = bookCount - loanCountData;

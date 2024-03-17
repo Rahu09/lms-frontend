@@ -21,7 +21,7 @@ type DataProps = {
 };
 
 interface IAuthorizationContext {
-  getAuthData: DataProps | undefined;
+  getAuthData: DataProps;
 }
 
 const AuthorizationContext = createContext<IAuthorizationContext | null>(null);

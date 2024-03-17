@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
-
-interface UserSettingProps {
+interface ProfileSettingProps {
   onButtonClick: (componentName: string) => void;
 }
-const UserSetting = ({ onButtonClick }: UserSettingProps) => {
+const ProfileSetting = ({ onButtonClick }: ProfileSettingProps) => {
   return (
     <div className="flex flex-col justify-center align-middle py-3">
       <div className="flex flex-col justify-center align-middle">
-        <Button className="m-1" onClick={() => onButtonClick("UserDetails")}>
+        <Button className="m-1" onClick={() => onButtonClick("ProfileDetails")}>
           Profile
         </Button>
         <br />
@@ -15,20 +14,25 @@ const UserSetting = ({ onButtonClick }: UserSettingProps) => {
           Update Profile
         </Button>
         <br />
-        <Button className="m-1" onClick={() => onButtonClick("BorrowHistory")}>
-          Borrow History
-        </Button>
-        <br />
-        <br />
         <Button
           className="m-1"
-          onClick={() => onButtonClick("ReservationHistory")}
+          onClick={() => onButtonClick("UserLoanDetails")}
         >
-          ReservationHistory
+          UserLoanDetails
         </Button>
         <br />
-        <Button className="m-1" onClick={() => onButtonClick("UserFine")}>
-          Book Fine
+        <br />
+        <Button className="m-1" onClick={() => onButtonClick("AddCategory")}>
+          AddCategory
+        </Button>
+        <br />
+        <Button className="m-1" onClick={() => onButtonClick("UpdateBook")}>
+          UpdateBook
+        </Button>
+        <br />
+        <br />
+        <Button className="m-1" onClick={() => onButtonClick("ReturnRequest")}>
+          ReturnRequest
         </Button>
         <br />
       </div>
@@ -43,4 +47,4 @@ const UserSetting = ({ onButtonClick }: UserSettingProps) => {
   );
 };
 
-export default UserSetting;
+export default ProfileSetting;

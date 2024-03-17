@@ -64,7 +64,10 @@ export const MobileFilterSort = ({
                 variant={"link"}
                 className={cn(
                   "flex items-center w-full font-semibold  text-lg",
-                  { " bg-zinc-200": sort === sortOptions.POPULARITY }
+                  {
+                    " bg-zinc-200": sort === sortOptions.POPULARITY,
+                    " hidden": sortOptions.POPULARITY === sort,
+                  }
                 )}
                 onClick={() => handleSort(sortOptions.POPULARITY)}
               >

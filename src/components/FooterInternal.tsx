@@ -1,26 +1,12 @@
-import { cn } from "@/lib/utils";
-import { useLocation } from "react-router-dom";
-
-export const Footer = () => {
-  const location = useLocation();
-
+export const FooterInternal = () => {
   return (
-    <section
-      className={cn("bg-slate-200 relative bottom-0 mt-auto", {
-        " hidden bottom-0":
-          location.pathname === "/login" ||
-          location.pathname === "/signup" ||
-          location.pathname === "/booklist",
-      })}
-    >
+    <section className="bg-slate-200 relative bottom-0 mt-auto w-full ">
       <div className="bg-slate-50 pb-2">
-        <div className="w-full m-0 p-0 h-24 md:h-16 bg-violet-950 flex justify-center items-center ">
-          <p className=" text-violet-50 text-4xl text-center">
-            YOUR DAILY DOSE OF NEW WORLDS
-          </p>
+        <div className="w-full m-0 p-0 h-16 bg-violet-950 flex justify-center items-center ">
+          <p className=" text-violet-50 text-4xl">HOMEGROWN INDIAN BRAND</p>
         </div>
         <div className="flex justify-center items-center my-5 ">
-          <p className=" text-5xl text-violet-950 text-center">
+          <p className=" text-5xl text-violet-950">
             Over <span className=" font-bold">6 Million</span> Happy Customers
           </p>
         </div>

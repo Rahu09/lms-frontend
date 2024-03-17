@@ -20,8 +20,6 @@ interface UserAccountNavProps {
 const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
   const navigate = useNavigate();
   const logout = async () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("email");
     AuthenticationService.logout();
     navigate("/");
     window.location.reload();
@@ -68,7 +66,7 @@ const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link to="/pricing">
+          <Link to="/userprofile">
             Profile <Gem className="text-blue-600 h-4 w-4 ml-1.5" />
           </Link>
         </DropdownMenuItem>

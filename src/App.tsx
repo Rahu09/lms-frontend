@@ -8,7 +8,8 @@ import { Login } from "./pages/Login/Login";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { Signup } from "./pages/Signup/Signup";
 import ProfileBase from "./pages/UserProfile/ProfileBase";
-// import ProfileBase from "./pages/UserProfile/ProfileBase";
+import { ErrorPage } from "./components/ErrorPage";
+import AdminProfileBase from "./pages/AdminProfile/AdminProfileBase";
 
 function App() {
   return (
@@ -22,12 +23,13 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/booklist" element={<BookList />} />
-              <Route path="/bookinfo" element={<BookInfoBase />} />
+              <Route path="/bookinfo/:bookId" element={<BookInfoBase />} />
               <Route path="/userprofile" element={<ProfileBase />} />
-              {/* <Route path="/adminprofile" element={<AdminProfileBase />} /> */}
+              <Route path="/error" element={<ErrorPage />} />
+              <Route path="/adminprofile" element={<AdminProfileBase />} />
               <Route path="*" element={<div>Page path not defined</div>} />
             </Routes>
-            {/* <Footer /> */}
+            <Footer />
           </div>
         </BrowserRouter>
       </AuthorizationProvider>

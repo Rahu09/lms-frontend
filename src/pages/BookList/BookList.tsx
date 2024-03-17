@@ -8,14 +8,31 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import { Button } from "@/components/ui/button";
 import { FilterBox } from "./FilterBox";
 import { filterOptions, sortOptions } from "@/lib/enums";
 import { MobileFilterSort } from "./MobileFilterSort";
+import { cn } from "@/lib/utils";
+import { FooterInternal } from "@/components/FooterInternal";
+import { Loading } from "@/components/Loading";
+import { ErrorPage } from "@/components/ErrorPage";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 
 export const BookList = () => {
+  const [value, setValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [searchList, setSearchList] = useState<bookResponse[]>([]);
+  const options = ["Option 1", "Option 2"];
+
+  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("searchlist " + searchList);
+    console.log("value " + value);
+    console.log("inputValue " + inputValue);
+  };
+
   const {
     status,
     error,
@@ -33,18 +50,56 @@ export const BookList = () => {
     queryFn: ({ pageParam = 0 }: { pageParam: number }) =>
       BookServices.getAllBooks(pageParam),
   });
-  console.log("bookList", data);
+  // console.log("bookList", data);
 
   const [sort, setSort] = useState<sortOptions>(sortOptions.ALPHABETICAL);
+  const [filterPageNo, setFilterPageNo] = useState<number>(0);
+  const [filterRequestData, setFilterRequestData] = useState<{
+    authorList: string[];
+    categoryList: string[];
+    languageList: string[];
+  }>({
+    authorList: [],
+    categoryList: [],
+    languageList: [],
+  });
   const [filter, setFilter] = useState<
     {
       type: filterOptions;
       filterElement: string[];
     }[]
   >([
-    { type: filterOptions.AUTHOR, filterElement: ["a", "b", "c", "d"] },
-    { type: filterOptions.CATEGORY, filterElement: ["e", "f", "g", "h"] },
-    { type: filterOptions.LANGUAGE, filterElement: ["i", "j", "k", "l"] },
+    {
+      type: filterOptions.AUTHOR,
+      filterElement: [
+        "Samuel Beckett",
+        "Jane Austen",
+        "Anton Chekhov",
+        "Emily Brontë",
+        "Albert Camus",
+      ],
+    },
+    {
+      type: filterOptions.CATEGORY,
+      filterElement: [
+        "fantasy",
+        "mystery",
+        "romance",
+        "thriller",
+        "historical fiction",
+      ],
+    },
+    {
+      type: filterOptions.LANGUAGE,
+      filterElement: [
+        "Danish",
+        "Hebrew",
+        "English",
+        "Italian",
+        "Spanish",
+        "Russian",
+      ],
+    },
   ]);
 
   const emptyBooleanArray = (filterType: filterOptions) => {
@@ -78,10 +133,81 @@ export const BookList = () => {
       state: emptyBooleanArray(filterOptions.LANGUAGE),
     },
   ]);
+  const [bookFilterList, setBookFilterList] = useState<{
+    data: bookResponse[];
+    nextPage: number | undefined;
+    prevPage: number | undefined;
+  }>({
+    data: [],
+    nextPage: undefined,
+    prevPage: undefined,
+  });
+  useEffect(() => {
+    const setFilter = async () => {
+      const authorList: string[] = [];
+      for (let index = 0; index < selected[0].state.length; index++) {
+        const element = selected[0].state[index];
+        if (element) {
+          authorList.push(filter[0].filterElement[index]);
+        }
+      }
+      const categoryList: string[] = [];
+      for (let index = 0; index < selected[1].state.length; index++) {
+        const element = selected[1].state[index];
+        if (element) {
+          categoryList.push(filter[1].filterElement[index]);
+        }
+      }
+      const languageList: string[] = [];
+      for (let index = 0; index < selected[2].state.length; index++) {
+        const element = selected[2].state[index];
+        if (element) {
+          languageList.push(filter[2].filterElement[index]);
+        }
+      }
+      const filterList = {
+        authorList: [...authorList],
+        categoryList: [...categoryList],
+        languageList: [...languageList],
+      };
+      setFilterRequestData(filterList);
+      const bookFilterListRender = await BookServices.getBookFilterPage(
+        0,
+        filterList
+      );
+      setBookFilterList(bookFilterListRender);
+      setFilterPageNo(0);
+    };
+    setFilter();
+  }, [setSelected, selected, filter]);
 
-  // const auth = useAuthorization();
+  useEffect(() => {
+    const filterNewPageAdd = async () => {
+      if (
+        bookFilterList.nextPage &&
+        bookFilterList.nextPage - 1 === filterPageNo
+      )
+        return;
+      if (
+        bookFilterList.prevPage &&
+        bookFilterList.prevPage + 1 === filterPageNo
+      )
+        return;
+      const bookFilterListRender = await BookServices.getBookFilterPage(
+        filterPageNo,
+        filterRequestData
+      );
+      const tempData = {
+        data: [...bookFilterList.data, ...bookFilterListRender.data],
+        nextPage: bookFilterListRender.nextPage,
+        prevPage: bookFilterList.prevPage,
+      };
+      setBookFilterList(tempData);
+    };
+    filterNewPageAdd();
+  }, [filterPageNo]);
 
-  console.log(selected);
+  // console.log("bookfilterList ", bookFilterList);
 
   const handleChange = (e: SelectChangeEvent) => {
     const selected =
@@ -107,19 +233,22 @@ export const BookList = () => {
     setSelected(tempSelected);
   };
 
-  if (status === "pending") return <div>Loading...</div>;
-  if (status === "error")
-    return <div>An error has occoured {JSON.stringify(error)}</div>;
+  if (status === "pending")
+    return (
+      <div className="flex justify-center items-center h-screen w-screen">
+        <Loading />
+      </div>
+    );
+  if (status === "error") return <ErrorPage />;
   return (
-    <MaxWidthWrapper className=" max-w-[90rem]">
-      <div className="flex flex-col">
-        <div className=" w-[100%] h-[45vh] bg-[#dbeafe] flex justify-center items-center">
-          banner
-          {/* <Test /> */}
+    <div className="w-full p-0 m-0">
+      <MaxWidthWrapper className=" max-w-[84rem] bg-white">
+        <div className=" w-[100%] h-[45vh] overflow-hidden  bg-violet-50 flex justify-center items-center">
+          <img src="./bp.png" alt="" className=" w-full pb-60" />
         </div>
-        <div>
+        <div className=" px-2">
           <div>
-            <div className=" mt-10 h-28 hidden lg:flex flex-row items-center justify-between pl-[25%]">
+            <div className=" mt-10 min-h-28 hidden lg:flex flex-row items-center justify-between pl-[25%]">
               <div className="flex flex-col justify-start items-start h-full w-[70%] pt-4">
                 <Typography
                   variant="overline"
@@ -159,7 +288,7 @@ export const BookList = () => {
                         ele && (
                           <div
                             key={ind}
-                            className="mr-3 flex flex-row justify-center items-center  rounded-3xl px-3 w-fit h-7 border border-gray-300"
+                            className="mr-3 flex flex-row justify-center items-center  rounded-3xl px-3 w-fit h-7 border border-violet-300 bg-violet-50"
                           >
                             <div>{`${selected[index].type}:${filter[index].filterElement[ind]}`}</div>
                             <Button
@@ -174,6 +303,28 @@ export const BookList = () => {
                     )
                   )}
                 </div>
+              </div>
+              <div>
+                <Autocomplete
+                  value={value}
+                  onChange={(event, newValue) => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    setValue(newValue);
+                    console.log("value", value);
+                  }}
+                  inputValue={inputValue}
+                  onInputChange={(event, newInputValue) => {
+                    setInputValue(newInputValue);
+                    console.log("inputValue", inputValue);
+                  }}
+                  id="controllable-states-demo"
+                  options={options}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Controllable" />
+                  )}
+                />
               </div>
               <FormControl sx={{ m: 1, minWidth: 240 }} size="small">
                 <InputLabel id="demo-select-small-label">
@@ -201,7 +352,7 @@ export const BookList = () => {
                 </Select>
               </FormControl>
             </div>
-            <div className="flex flex-row gap-4  mt-4">
+            <div className="flex flex-row gap-4 mt-4">
               {/* Side bar*/}
               <div className="hidden lg:block w-[24%] border-[1px] border-gray-300 border-l-0 border-b-0 h-fit ml-5">
                 <FilterBox
@@ -229,27 +380,65 @@ export const BookList = () => {
                 />
               </div>
               {/* book container */}
-              <div className=" w-full h-fit flex flex-row flex-wrap justify-around gap-0 sm:gap-2 items-center pt-2 border-t-[1px] border-gray-300 ">
-                {data &&
-                  data.pages.map((page) =>
-                    /**
-                     * Explaining comment
-                     *
-                     * @ts-expect-error */
-                    page.data.map((book: bookResponse) => (
-                      <BookCard key={book.id} bookData={book} />
-                    ))
-                  )}
-                {hasNextPage && (
-                  <button
-                    disabled={isFetchingNextPage}
-                    onClick={() => fetchNextPage()}
+              {bookFilterList.data.length > 0 ? (
+                <div className="flex flex-col w-full h-full">
+                  <div
+                    className={cn(
+                      " w-full h-fit flex flex-row flex-wrap justify-center gap-0 sm:gap-2 items-center pt-2 border-t-[1px] border-gray-300 "
+                    )}
                   >
-                    Load More
-                  </button>
-                )}
-              </div>
+                    {bookFilterList.data.map((book) => (
+                      <BookCard key={book.id} bookData={book} />
+                    ))}
+                  </div>
+                  {bookFilterList.nextPage && (
+                    <Button
+                      className={cn("p-0 block", {
+                        " bg-black ": bookFilterList.nextPage === undefined,
+                      })}
+                      onClick={() => {
+                        if (bookFilterList.nextPage)
+                          setFilterPageNo((old) => old + 1);
+                      }}
+                    >
+                      Load More
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col w-full h-full">
+                  <div
+                    className={cn(
+                      " w-full h-fit flex flex-row flex-wrap justify-center gap-0 sm:gap-2 items-center pt-2 border-t-[1px] border-gray-300 "
+                    )}
+                  >
+                    {data &&
+                      data.pages.map((page) =>
+                        /**
+                         * Explaining comment
+                         *
+                         * @ts-expect-error */
+                        page.data.map((book: bookResponse) => (
+                          <BookCard key={book.id} bookData={book} />
+                        ))
+                      )}
+                  </div>
+                  {hasNextPage && (
+                    <Button
+                      className={cn("p-0 mb-2 block", {
+                        " bg-violet-950 hover:bg-violet-800 ":
+                          bookFilterList.nextPage === undefined,
+                      })}
+                      disabled={isFetchingNextPage}
+                      onClick={() => fetchNextPage()}
+                    >
+                      Load More
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
+            <FooterInternal />
             <MobileFilterSort
               filter={filter}
               setFilter={setFilter}
@@ -260,7 +449,7 @@ export const BookList = () => {
             />
           </div>
         </div>
-      </div>
-    </MaxWidthWrapper>
+      </MaxWidthWrapper>
+    </div>
   );
 };
