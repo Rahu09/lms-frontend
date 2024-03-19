@@ -14,7 +14,7 @@ const BookInfoImg = ({ imageUrl }: Prop) => {
       <img
         src={imageUrl}
         alt="Book Image"
-        className="w-[70%] rounded-xl border-8 border-violet-100"
+        className="w-[90%] rounded-xl border-8 border-violet-100"
       />
     </div>
   );

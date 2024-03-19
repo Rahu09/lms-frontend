@@ -1,6 +1,6 @@
 export const FooterInternal = () => {
   return (
-    <section className="bg-slate-200 relative bottom-0 mt-auto w-full ">
+    <section className="bg-slate-200 relative bottom-0 mt-auto w-[99vw]">
       <div className="bg-slate-50 pb-2">
         <div className="w-full m-0 p-0 h-16 bg-violet-950 flex justify-center items-center ">
           <p className=" text-violet-50 text-4xl">HOMEGROWN INDIAN BRAND</p>

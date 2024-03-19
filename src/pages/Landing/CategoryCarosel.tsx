@@ -28,9 +28,8 @@ export function CategoryCarosel({
   filterList: filterRequestDataType;
   filterType: string;
 }) {
-  // console.log(ind);
   const { data, status, error } = useQuery({
-    queryKey: ["books", "category"],
+    queryKey: ["books", filterList],
     queryFn: () => BookServices.getBooksByFilter(filterList),
   });
   const navigate = useNavigate();
@@ -43,8 +42,11 @@ export function CategoryCarosel({
         <Loading />
       </div>
     );
-  if (status === "error") return <ErrorPage />;
-  // console.log(data);
+  if (status === "error") {
+    console.log(error);
+
+    return <ErrorPage />;
+  }
 
   return (
     <div

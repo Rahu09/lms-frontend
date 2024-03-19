@@ -1,7 +1,6 @@
 import AuthenticationService from "@/services/AuthenticationService";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext } from "react";
 
 type AuthorizationProviderProps = {
   children: React.ReactNode;

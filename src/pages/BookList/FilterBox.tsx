@@ -6,12 +6,12 @@ import { FilterProps } from "@/lib/types";
 
 export const FilterBox = ({
   filter,
-  setFilter,
   filterName,
   selected,
   setSelected,
 }: FilterProps) => {
   const [input, setInput] = useState<string>();
+  const [showNElement, setShowNElement] = useState<number>(6);
   let filterIndex = -1;
   let selectedIndex = -1;
   for (let i = 0; i < selected.length; i++) {
@@ -41,28 +41,12 @@ export const FilterBox = ({
     temp[selectedIndex].state[ind] = !temp[selectedIndex].state[ind];
     setSelected(temp);
   };
-
-  const addFilter = () => {
-    if (input === undefined) {
-      alert("input is empty");
-      return;
+  const showMore = () => {
+    if (showNElement === 6) {
+      setShowNElement(filter[filterIndex].filterElement.length);
+    } else {
+      setShowNElement(6);
     }
-    const tempFilter = [...filter];
-    const ind = tempFilter[filterIndex].filterElement.length;
-    tempFilter[filterIndex] = {
-      ...tempFilter[filterIndex],
-      filterElement: [...tempFilter[filterIndex].filterElement, input],
-    };
-    setFilter(tempFilter);
-
-    const tempSelected = [...selected];
-    tempSelected[selectedIndex] = {
-      ...tempSelected[selectedIndex],
-      state: [...tempSelected[selectedIndex].state],
-    };
-    tempSelected[selectedIndex].state[ind] =
-      !tempSelected[selectedIndex].state[ind];
-    setSelected(tempSelected);
   };
 
   return (
@@ -73,35 +57,59 @@ export const FilterBox = ({
       <div className="flex flex-row gap-2 mt-4">
         <Input
           type="email"
-          placeholder="Type to Add Filter"
+          placeholder="Type to Search Filter"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className=" bg-violet-50 border-violet-300 text-sm"
         />
-        <Button
-          className="text-sm bg-violet-950 hover:bg-violet-800"
-          onClick={addFilter}
-        >
-          Add
-        </Button>
       </div>
       <div className="mt-5">
-        {filter[filterIndex].filterElement.map((ele, ind) => (
-          <div key={ind} className=" flex space-x-2 mt-3">
-            <Checkbox
-              id={ind.toString()}
-              checked={selected[selectedIndex].state[ind]}
-              onCheckedChange={() => handleChecked(ind)}
-              className=" "
-            />
-            <label
-              htmlFor="terms1"
-              className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {ele}
-            </label>
-          </div>
-        ))}
+        {filter[filterIndex].filterElement.map((ele, ind) => {
+          if (input !== undefined && input.length !== 0) {
+            if (ele.toLowerCase().includes(input.toLowerCase())) {
+              return (
+                <div key={ind} className=" flex space-x-2 mt-3">
+                  <Checkbox
+                    id={ind.toString()}
+                    checked={selected[selectedIndex].state[ind]}
+                    onCheckedChange={() => handleChecked(ind)}
+                    className=" "
+                  />
+                  <label
+                    htmlFor="terms1"
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {ele}
+                  </label>
+                </div>
+              );
+            }
+          } else {
+            if (ind < showNElement) {
+              return (
+                <div key={ind} className=" flex space-x-2 mt-3">
+                  <Checkbox
+                    id={ind.toString()}
+                    checked={selected[selectedIndex].state[ind]}
+                    onCheckedChange={() => handleChecked(ind)}
+                    className=" "
+                  />
+                  <label
+                    htmlFor="terms1"
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {ele}
+                  </label>
+                </div>
+              );
+            }
+          }
+        })}
+        <div className="flex flex-row justify-end">
+          <Button variant={"ghost"} onClick={showMore}>
+            {showNElement === 6 ? "more" : "less"}
+          </Button>
+        </div>
       </div>
     </div>
   );

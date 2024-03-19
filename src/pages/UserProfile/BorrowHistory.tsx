@@ -4,14 +4,15 @@ import UserServices from "@/services/UserServices";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "@/components/Loading";
 import { ErrorPage } from "@/components/ErrorPage";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 
 const BorrowHistory = () => {
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const auth = useAuthorization();
-  const [image, setImage] = useState<string>("");
   const userID: number | undefined = auth.getAuthData
     ? auth.getAuthData.id!
     : 1;
@@ -39,10 +40,13 @@ const BorrowHistory = () => {
       queryClient.invalidateQueries({
         queryKey: ["user", "userFineHistory", userID],
       });
-      alert(`Book submited successfully
-      submitted amount: ${res.submittedAmount}
-      Return amount: ${res.returnAmount}
-      `);
+      toast({
+        title: "Book Submited!.",
+        description: `Your Book have beensubmited successfully.
+        submitted amount: ${res.submittedAmount}
+        Return amount: ${res.returnAmount}`,
+        action: <ToastAction altText="OK">OK</ToastAction>,
+      });
     });
   };
 
@@ -95,7 +99,8 @@ const BorrowHistory = () => {
                   <img
                     src={"data:image/jpeg;base64," + item.imgUrl}
                     alt="bookImage"
-                    className="h-20 w-20 object-cover rounded-lg"
+                    className="h-20 w-20 object-cover rounded-lg hover:cursor-pointer"
+                    onClick={() => navigate(`/bookinfo/${item.bookId}`)}
                   />
                 </td>
                 <td>{item.bookName}</td>
@@ -128,7 +133,8 @@ const BorrowHistory = () => {
                   <img
                     src={"data:image/jpeg;base64," + item.imageUrl}
                     alt="bookImage"
-                    className="h-20 w-20 object-cover rounded-lg"
+                    className="h-20 w-20 object-cover rounded-lg hover:cursor-pointer"
+                    onClick={() => navigate(`/bookinfo/${item.bookId}`)}
                   />
                 </td>
                 <td>{item.book}</td>

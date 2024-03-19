@@ -74,8 +74,8 @@ type UserFineItem = {
   formattedIssueDate: string;
   formattedReturnDate: string | null;
 };
-type UserFineResponse = UserFineItem[];
-type ReservationHistoryResponse = ReservationHistoryItem[];
+export type UserFineResponse = UserFineItem[];
+export type ReservationHistoryResponse = ReservationHistoryItem[];
 // type LoanHistoryResponse = BorrowHistoryItem[];
 
 class UserServices {
@@ -121,28 +121,6 @@ class UserServices {
     );
     return fineHistory;
   };
-
-  // getBorrowHistory: (id: number) => Promise<LoanHistoryResponse> = async (
-  //   id
-  // ) => {
-  //   const response = await axios.get(
-  //     `${BASE_REST_API_URL}/userLoanHistory/${id}`,
-  //     config
-  //   );
-
-  //   const loanHistory: BorrowHistoryItem[] = response.data.map(
-  //     (item: BorrowHistoryItem) => ({
-  //       ...item,
-  //       formattedIssueDate: new Date(item.issueDate).toLocaleDateString(
-  //         "en-GB"
-  //       ),
-  //       formattedReturnDate: item.returnDate
-  //         ? new Date(item.returnDate).toLocaleDateString("en-GB")
-  //         : null,
-  //     })
-  //   );
-  //   return loanHistory;
-  // };
 
   async updateUser(userData: { id: number; requestData: userRequest }) {
     try {

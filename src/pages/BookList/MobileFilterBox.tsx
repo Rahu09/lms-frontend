@@ -6,12 +6,11 @@ import { useState } from "react";
 
 export const MobileFilterBox = ({
   filter,
-  setFilter,
   filterName,
   selected,
   setSelected,
 }: FilterProps) => {
-  console.log(filter, setFilter, filterName, selected, setSelected);
+  console.log(filter, filterName, selected, setSelected);
 
   const [input, setInput] = useState<string>();
   let filterIndex = -1;
@@ -44,28 +43,6 @@ export const MobileFilterBox = ({
     setSelected(temp);
   };
 
-  const addFilter = () => {
-    if (input === undefined) {
-      alert("input is empty");
-      return;
-    }
-    const tempFilter = [...filter];
-    const ind = tempFilter[filterIndex].filterElement.length;
-    tempFilter[filterIndex] = {
-      ...tempFilter[filterIndex],
-      filterElement: [...tempFilter[filterIndex].filterElement, input],
-    };
-    setFilter(tempFilter);
-
-    const tempSelected = [...selected];
-    tempSelected[selectedIndex] = {
-      ...tempSelected[selectedIndex],
-      state: [...tempSelected[selectedIndex].state],
-    };
-    tempSelected[selectedIndex].state[ind] =
-      !tempSelected[selectedIndex].state[ind];
-    setSelected(tempSelected);
-  };
   return (
     <div className="h-full w-full  flex flex-col justify-start items-start px-4">
       <div className="flex flex-row justify-between w-full">
@@ -79,7 +56,6 @@ export const MobileFilterBox = ({
           onChange={(e) => setInput(e.target.value)}
           className=" bg-indigo-50 border-gray-300"
         />
-        <Button onClick={addFilter}>Add</Button>
       </div>
       {filter[filterIndex].filterElement.map((ele, ind) => (
         <div key={ind} className=" flex space-x-2 mt-3">

@@ -7,7 +7,7 @@ const config = {
   },
 };
 
-type bookRequest = {
+export type bookRequest = {
   title: string;
   isbn: string;
   authorName: string;
@@ -178,6 +178,29 @@ class BookServices {
   searchBook: (search: string) => Promise<bookResponse[]> = async (search) => {
     const response = await axios.get(
       `${BASE_REST_API_URL}/search/${search}`,
+      config
+    );
+    return response.data;
+  };
+  getCategory: () => Promise<string[]> = async () => {
+    const response = await axios.get(
+      `${BASE_REST_API_URL}/getCategory`,
+      config
+    );
+    return response.data;
+  };
+
+  getLanguage: () => Promise<string[]> = async () => {
+    const response = await axios.get(
+      `${BASE_REST_API_URL}/unique-languages`,
+      config
+    );
+    return response.data;
+  };
+
+  getAuthor: () => Promise<string[]> = async () => {
+    const response = await axios.get(
+      `${BASE_REST_API_URL}/unique-authors`,
       config
     );
     return response.data;

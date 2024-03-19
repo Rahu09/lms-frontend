@@ -1,9 +1,11 @@
 import { useAuthorization } from "@/context/AuthorizationProvider";
-import { useMutation } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import UserServices from "@/services/UserServices";
 import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 
 type formDataProps = {
   firstName: string;
@@ -20,6 +22,8 @@ enum Gender {
 }
 
 const UpdateProfile = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const userdata = useAuthorization().getAuthData;
 
   const [formData, setFormData] = useState<formDataProps>({} as formDataProps);
@@ -30,7 +34,12 @@ const UpdateProfile = () => {
       id: userdata.id,
       requestData: formData,
     }).then((res) => {
-      alert("Profile Updated Successfully");
+      toast({
+        title: "Profile Updated!.",
+        description: "Your Profile have been Updated Successfully.",
+        action: <ToastAction altText="OK">OK</ToastAction>,
+      });
+      queryClient.invalidateQueries({ queryKey: ["details"] });
     });
   };
   useEffect(() => {

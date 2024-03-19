@@ -4,6 +4,8 @@ import { useAuthorization } from "@/context/AuthorizationProvider";
 import { Button } from "@/components/ui/button";
 import { Loading } from "@/components/Loading";
 import { ErrorPage } from "@/components/ErrorPage";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 interface BookInfoMainInfoProps {
   bookdata: {
     authorName: string;
@@ -21,6 +23,7 @@ interface BookInfoMainInfoProps {
   };
 }
 const BookInfoMainInfo = ({ bookdata }: BookInfoMainInfoProps) => {
+  const { toast } = useToast();
   const bookId = bookdata.id;
   const auth = useAuthorization();
 
@@ -64,7 +67,11 @@ const BookInfoMainInfo = ({ bookdata }: BookInfoMainInfoProps) => {
         console.log("book reserved")
       );
     }
-    alert("book loaned");
+    toast({
+      title: "Book Rented!.",
+      description: `Your have Successfully rented ${bookdata.title} .`,
+      action: <ToastAction altText="OK">OK</ToastAction>,
+    });
   };
 
   return (
@@ -77,20 +84,13 @@ const BookInfoMainInfo = ({ bookdata }: BookInfoMainInfoProps) => {
           ))}
         </p>
       </div>
-      <div className="border-b-2 mt-4 border-violet-400 w-full"></div>
+      <div className="border-b-2 mt-4 border-violet-200 w-full"></div>
       <div className="">
         <div className="flex flex-row justify-between">
           <p className="font-bold ml-4 pt-6 text-3xl text-gray-600">
             ₹ {bookdata.cost}
           </p>
 
-          <Button
-            className="mt-5 bg-violet-950"
-            disabled={bookLimit === 5}
-            onClick={handleClick}
-          >
-            {buttonText}
-          </Button>
           {bookLimit === 5 ? (
             <p className="text-red-600">
               User borrow limit of 5 books is reached. Please return a book to
@@ -147,6 +147,13 @@ const BookInfoMainInfo = ({ bookdata }: BookInfoMainInfoProps) => {
               </p>
             </div>
           </div>
+          <Button
+            className="bg-violet-950 w-full mt-10 h-16 hover:bg-violet-900"
+            disabled={bookLimit === 5}
+            onClick={handleClick}
+          >
+            {buttonText}
+          </Button>
         </div>
       </div>
     </div>

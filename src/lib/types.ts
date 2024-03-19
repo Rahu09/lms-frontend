@@ -5,14 +5,7 @@ export type FilterProps = {
     type: filterOptions;
     filterElement: string[];
   }[];
-  setFilter: React.Dispatch<
-    React.SetStateAction<
-      {
-        type: filterOptions;
-        filterElement: string[];
-      }[]
-    >
-  >;
+
   filterName: filterOptions;
   selected: {
     type: filterOptions;
