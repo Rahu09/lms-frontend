@@ -163,6 +163,24 @@ class UserServices {
     );
     return response.data;
   };
+
+  async oneNotificationSeen(notificationId: number) {
+    const response = await axios.post(
+      `${BASE_REST_API_URL}/notification/one-notification/${notificationId}`,
+      {},
+      config
+    );
+    return response.data;
+  }
+
+  async allNotificationSeen(userId: number) {
+    const response = await axios.post(
+      `${BASE_REST_API_URL}/notification/all-notification/${userId}`,
+      {},
+      config
+    );
+    return response.data;
+  }
 }
 
 export default new UserServices();

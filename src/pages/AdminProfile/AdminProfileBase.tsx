@@ -1,5 +1,4 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { useState } from "react";
 import UpdateProfile from "./UpdateProfile";
 import BorrowHistory from "./BorrowHistory";
 import { useAuthorization } from "@/context/AuthorizationProvider";
@@ -8,23 +7,16 @@ import { Button } from "@/components/ui/button";
 import AuthenticationService from "@/services/AuthenticationService";
 import { cn } from "@/lib/utils";
 import { ErrorPage } from "@/components/ErrorPage";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AddCategory from "./AddCategory";
 import ReturnRequest from "./ReturnRequest";
 
-enum ComponentName {
-  USERP_ROFILE = "UserProfile",
-  FINE_HISTORY = "FineAndHistory",
-  CATEGORY = "Category",
-  RETURN_REQUEST = "ReturnRequest",
-}
-
 const ProfileBase = () => {
+  const location = useLocation();
+  console.log(location.hash);
+
   const navigate = useNavigate();
   const auth = useAuthorization().getAuthData;
-  const [selectedComponent, setSelectedComponent] = useState<ComponentName>(
-    ComponentName.USERP_ROFILE
-  );
 
   return (
     <MaxWidthWrapper>
@@ -50,11 +42,10 @@ const ProfileBase = () => {
                 className={cn(
                   "w-full h-20 hover:bg-violet-100 flex border-b border-violet-200 justify-center items-center hover:cursor-pointer",
                   {
-                    "bg-violet-100":
-                      selectedComponent === ComponentName.USERP_ROFILE,
+                    "bg-violet-100": location.hash === "#update",
                   }
                 )}
-                onClick={() => setSelectedComponent(ComponentName.USERP_ROFILE)}
+                onClick={() => navigate("#update")}
               >
                 User Profile
               </div>
@@ -62,11 +53,10 @@ const ProfileBase = () => {
                 className={cn(
                   "w-full h-20 hover:bg-violet-100 flex border-b border-violet-200 justify-center items-center hover:cursor-pointer",
                   {
-                    "bg-violet-100":
-                      selectedComponent === ComponentName.FINE_HISTORY,
+                    "bg-violet-100": location.hash === "#borrow",
                   }
                 )}
-                onClick={() => setSelectedComponent(ComponentName.FINE_HISTORY)}
+                onClick={() => navigate("#borrow")}
               >
                 Rent & Reservation
               </div>
@@ -74,11 +64,10 @@ const ProfileBase = () => {
                 className={cn(
                   "w-full h-20 hover:bg-violet-100 flex border-b border-violet-200 justify-center items-center hover:cursor-pointer",
                   {
-                    "bg-violet-100":
-                      selectedComponent === ComponentName.CATEGORY,
+                    "bg-violet-100": location.hash === "#category",
                   }
                 )}
-                onClick={() => setSelectedComponent(ComponentName.CATEGORY)}
+                onClick={() => navigate("#category")}
               >
                 Category
               </div>
@@ -86,15 +75,12 @@ const ProfileBase = () => {
                 className={cn(
                   "w-full h-20 hover:bg-violet-100 flex border-b border-violet-200 justify-center items-center hover:cursor-pointer",
                   {
-                    "bg-violet-100":
-                      selectedComponent === ComponentName.RETURN_REQUEST,
+                    "bg-violet-100": location.hash === "#return",
                   }
                 )}
-                onClick={() =>
-                  setSelectedComponent(ComponentName.RETURN_REQUEST)
-                }
+                onClick={() => (window.location.hash = `#return`)}
               >
-                Return Request
+                Send Notification
               </div>
             </div>
           </div>
@@ -110,17 +96,11 @@ const ProfileBase = () => {
           </Button>
         </div>
         <div className="max-h-[88vh] w-[75%] m-7 border-2 border-violet-200 rounded-lg border-l-0">
-          {ComponentName.USERP_ROFILE === selectedComponent ? (
-            <UpdateProfile />
-          ) : ComponentName.FINE_HISTORY === selectedComponent ? (
-            <BorrowHistory />
-          ) : ComponentName.CATEGORY === selectedComponent ? (
-            <AddCategory />
-          ) : ComponentName.RETURN_REQUEST === selectedComponent ? (
-            <ReturnRequest />
-          ) : (
-            <ErrorPage />
-          )}
+          {location.hash === "#update" && <UpdateProfile />}
+          {location.hash === "" && <UpdateProfile />}
+          {location.hash === "#borrow" && <BorrowHistory />}
+          {location.hash === "#category" && <AddCategory />}
+          {location.hash === "#return" && <ReturnRequest />}
         </div>
       </div>
     </MaxWidthWrapper>

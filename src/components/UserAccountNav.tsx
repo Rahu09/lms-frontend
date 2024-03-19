@@ -10,15 +10,24 @@ import { Icons } from "./Icons";
 import { Gem } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationService from "@/services/AuthenticationService";
+import { cn } from "@/lib/utils";
 
 interface UserAccountNavProps {
   email: string | undefined;
   name: string;
   imageUrl: string;
+  role: string;
 }
 
-const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
+const UserAccountNav = ({
+  email,
+  imageUrl,
+  name,
+  role,
+}: UserAccountNavProps) => {
   const navigate = useNavigate();
+  // console.log(auth);
+
   const logout = async () => {
     AuthenticationService.logout();
     navigate("/");
@@ -51,15 +60,24 @@ const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
           <div className="flex flex-col space-y-0.5 leading-none">
             {name && <p className="font-medium text-sm text-black"> {name}</p>}
             {email && (
-              <p className="w-[200px] truncate text-xs text-zinc-700">
-                {" "}
+              <p className="w-full truncate text-xs text-zinc-700 text-wrap">
                 {email}
               </p>
             )}
           </div>
         </div>
-
-        <DropdownMenuSeparator />
+        {role !== "ADMIN" && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              asChild
+              className="bg-purple-50 focus:bg-purple-100"
+            >
+              <Link to="/profile#notification">Notification</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
 
         <DropdownMenuItem asChild>
           <Link to="/booklist">BookList</Link>

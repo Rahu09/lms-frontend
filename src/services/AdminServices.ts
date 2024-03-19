@@ -26,6 +26,54 @@ type CategoryResponseitem = {
   category: string;
   bookList: null;
 };
+// "book": {
+//   "id": 1,
+//   "title": "Things Fall Apart",
+//   "isbn": "978-0-395-07122-11",
+//   "authorName": "Chinua Achebe",
+//   "publisherName": "Chinua Achebe Publishers",
+//   "edition": "First Edition",
+//   "description": "A novel about the complexities of African society and the effects of colonization.",
+//   "language": "English",
+//   "pages": 209,
+//   "cost": 25.99,
+//   "bookCount": 49,
+//   "imageURL": "images/things-fall-apart.jpg",
+//   "link": "https://en.wikipedia.org/wiki/Things_Fall_Apart\n"
+// }
+type LateLoanProps = {
+  id: number;
+  issueDate: string;
+  returnDate: string;
+  status: string;
+  user: {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    contactNo: string;
+    address: string;
+    noOfBooksLoan: number;
+    image: string;
+  };
+  book: {
+    id: number;
+    title: string;
+    isbn: string;
+    authorName: string;
+    publisherName: string;
+    edition: string;
+    description: string;
+    language: string;
+    pages: number;
+    cost: number;
+    bookCount: number;
+    imageURL: string;
+    link: string;
+  };
+};
+export type LateLoanResponse = LateLoanProps[];
+
 export type CategoryResponse = CategoryResponseitem[];
 
 class AdminServices {
@@ -36,7 +84,7 @@ class AdminServices {
     );
     return response.data;
   }
-  async addCategory(category: { category: string }) {
+  async addCategory(category: string) {
     const response = await axios.post(
       `${BASE_REST_API_URL}/addCategory`,
       { category: category },
@@ -100,6 +148,37 @@ class AdminServices {
     );
     return response.data;
   };
+
+  async getLoanWarnCount() {
+    const response = await axios.get(
+      `${BASE_REST_API_URL}/loanwarncount`,
+      config
+    );
+    return response.data;
+  }
+
+  async lateLoan(): Promise<LateLoanResponse> {
+    const response = await axios.get(`${BASE_REST_API_URL}/lateloan`, config);
+    return response.data;
+  }
+
+  async remindBookRequest() {
+    const response = await axios.post(
+      `${BASE_REST_API_URL}/remind-book-request`,
+      {},
+      config
+    );
+    return response.data;
+  }
+
+  async returnBookRequest() {
+    const response = await axios.post(
+      `${BASE_REST_API_URL}/alert-book-request`,
+      {},
+      config
+    );
+    return response.data;
+  }
 }
 
 export default new AdminServices();

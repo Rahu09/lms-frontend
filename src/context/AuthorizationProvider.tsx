@@ -1,12 +1,20 @@
 import AuthenticationService from "@/services/AuthenticationService";
-import { useQuery } from "@tanstack/react-query";
-import { createContext, useContext } from "react";
+import UserServices from "@/services/UserServices";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createContext, useContext, useEffect } from "react";
 
 type AuthorizationProviderProps = {
   children: React.ReactNode;
 };
 
-type DataProps = {
+type notificationResponse = {
+  id: number;
+  message: string;
+  seen: boolean;
+  type: string;
+  userID: number;
+};
+export type DataProps = {
   role: string;
   firstName: string;
   lastName: string;
@@ -17,6 +25,7 @@ type DataProps = {
   address: string;
   noOfBooksLoan: number;
   gender: string;
+  notification: notificationResponse[];
 };
 
 interface IAuthorizationContext {
@@ -42,10 +51,11 @@ export const AuthorizationProvider: React.FC<AuthorizationProviderProps> = ({
     queryKey: ["details"],
     queryFn: () => AuthenticationService.getDetails(),
   });
+
   if (status === "pending") console.log("fetching userdetails");
   if (status === "error") console.log("error in userDetails", error);
 
-  const getAuthData: IAuthorizationContext["getAuthData"] = data;
+  const getAuthData: IAuthorizationContext["getAuthData"] = data!;
 
   return (
     <AuthorizationContext.Provider value={{ getAuthData }}>

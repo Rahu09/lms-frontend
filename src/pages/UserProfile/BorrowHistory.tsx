@@ -79,14 +79,14 @@ const BorrowHistory = () => {
   console.log(FineHistorydata);
 
   return (
-    <div className="h-full overflow-y-auto scroll-smooth py-14">
+    <div className="h-full overflow-y-auto scroll-smooth pt-10">
       <div className="flex flex-col justify-center items-center pb-14">
-        <h2 className=" font-bold text-4xl pb-10 text-gray-600">
+        <h2 className=" font-bold text-4xl pb-8 text-gray-600 w-full">
           Reservation History
         </h2>
         <table className="table-auto  w-full">
           <thead>
-            <tr className="text-xl text-gray-600">
+            <tr className="text-xl text-gray-600 h-10 bg-violet-100 ">
               <th>Book Image</th>
               <th>Book</th>
               <th>Reserve Date</th>
@@ -94,7 +94,7 @@ const BorrowHistory = () => {
           </thead>
           <tbody className="">
             {ReservationHistorydata.map((item, index) => (
-              <tr key={index} className="">
+              <tr key={index} className=" hover:bg-violet-50">
                 <td className="py-2">
                   <img
                     src={"data:image/jpeg;base64," + item.imgUrl}
@@ -112,12 +112,12 @@ const BorrowHistory = () => {
       </div>
 
       <div className="flex flex-col justify-center items-center">
-        <h2 className=" font-bold text-4xl pb-10 text-gray-600">
+        <h2 className=" font-bold text-4xl pb-8 text-gray-600 w-full">
           Rent History
         </h2>
         <table className="table-auto  w-full text-md">
           <thead>
-            <tr className="text-xl text-gray-600">
+            <tr className="text-xl text-gray-600 h-10 bg-violet-100">
               <th>Book img</th>
               <th>Book</th>
               <th>Status</th>
@@ -128,7 +128,7 @@ const BorrowHistory = () => {
           </thead>
           <tbody className="">
             {FineHistorydata.map((item, index) => (
-              <tr key={index} className="">
+              <tr key={index} className=" hover:bg-violet-50">
                 <td className="py-2">
                   <img
                     src={"data:image/jpeg;base64," + item.imageUrl}

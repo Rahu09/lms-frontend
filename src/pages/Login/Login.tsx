@@ -1,28 +1,59 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import AuthenticationService from "@/services/AuthenticationService";
 import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { toast, useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
 
 export const Login = () => {
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [errors, setErrors] = useState<any | null>(null);
+  const [input, setInput] = useState<{ email: string; password: string }>({
+    email: "",
+    password: "",
+  });
 
-  console.log("email " + email, "pass " + password);
+  // console.log("email " + email, "pass " + password);
+  useEffect(() => {
+    if (errors !== null) {
+      alert(errors);
+    }
+  }, [errors]);
 
   const handlesubmit = (
     e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
   ) => {
     e.preventDefault();
-    console.log(email, password);
-    const requestData = {
-      email: email,
-      password: password,
-    };
-    AuthenticationService.login(requestData).then((response) => {
-      console.log(response);
-      navigate("/");
-      window.location.reload();
-    });
+
+    try {
+      setInput({
+        email: z.string().email().parse(email),
+        password: z.string().min(3).parse(password),
+      });
+      setErrors(null);
+      console.log(input);
+      const requestData = {
+        email: email,
+        password: password,
+      };
+      AuthenticationService.login(requestData).then((response) => {
+        console.log(response);
+        navigate("/");
+        window.location.reload();
+      });
+    } catch (error) {
+      console.log("1");
+
+      if (error instanceof Error && error.name === "ZodError") {
+        setErrors(error);
+        // console.log(errors);
+      } else {
+        throw error;
+      }
+    }
   };
 
   return (
@@ -41,10 +72,14 @@ export const Login = () => {
                 Library LIB
               </h2>
 
-              <p className="max-w-xl mt-3 text-gray-300">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. In
-                autem ipsa, nulla laboriosam dolores, repellendus perferendis
-                libero suscipit nam temporibus molestiae
+              <p className="max-w-3xl mt-3 text-gray-300 text-md">
+                At our library, we pride ourselves on our diverse collection of
+                genres and topics. From classic literature to contemporary
+                fiction, gripping mysteries to heartwarming romances, our
+                shelves are filled with treasures waiting to be discovered.
+                Explore the depths of history, unravel thrilling mysteries, or
+                immerse yourself in fantastical realms—all within the pages of
+                our carefully curated books.
               </p>
             </div>
           </div>

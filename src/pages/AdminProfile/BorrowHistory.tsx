@@ -1,37 +1,16 @@
-import { useAuthorization } from "@/context/AuthorizationProvider";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
 import UserServices, {
   ReservationHistoryResponse,
   UserFineResponse,
 } from "@/services/UserServices";
 import { useNavigate } from "react-router-dom";
-import { Loading } from "@/components/Loading";
-import { ErrorPage } from "@/components/ErrorPage";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast";
-import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 const BorrowHistory = () => {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [userID, setUserID] = useState<number | null>(null);
 
-  const onSubmit = (loanId: number, amount: number) => {
-    UserServices.submitBook(loanId, amount).then((res) => {
-      queryClient.invalidateQueries({
-        queryKey: ["user", "userFineHistory", userID],
-      });
-      toast({
-        title: "Book Submited!.",
-        description: `Your Book have beensubmited successfully.
-        submitted amount: ${res.submittedAmount}
-        Return amount: ${res.returnAmount}`,
-        action: <ToastAction altText="OK">OK</ToastAction>,
-      });
-    });
-  };
   const [ReservationHistorydata, setReservationHistorydata] =
     useState<ReservationHistoryResponse>([]);
   const [FineHistorydata, setFineHistorydata] = useState<UserFineResponse>([]);
@@ -44,29 +23,49 @@ const BorrowHistory = () => {
     UserServices.getUserFine(userID).then((res) => {
       setFineHistorydata(res);
     });
-    console.log("ReservationHistorydata", ReservationHistorydata);
-    console.log("FineHistorydata", FineHistorydata);
   };
 
   return (
-    <div className="h-full overflow-y-auto scroll-smooth py-14">
-      <div>
-        <input
-          type="text"
-          value={userID ? userID : ""}
-          onChange={(e) => setUserID(parseInt(e.target.value))}
-        />
-        <Button onClick={hanldeGetDetails}>Get Details</Button>
+    <div className="h-full overflow-y-auto scroll-smooth pb-14 ">
+      <div className="flex jc items-center h-20 text-4xl p-4 py-12">
+        <p className="text-gray-500 font-bold">Rent & Reservation</p>
+      </div>
+      <div className=" bg-violet-50 rounded-lg h-36 flex flex-row justify-between items-center pr-8 mr-8">
+        <div className="flex flex-row justify-start items-center">
+          <Input
+            type="text"
+            placeholder="Enter user id ..."
+            value={userID ? userID : ""}
+            onChange={(e) => setUserID(parseInt(e.target.value))}
+            className="flex w-1/2 h-10 m-4 text-xl"
+          />
+          <Button
+            onClick={hanldeGetDetails}
+            className="mx-4 bg-violet-950 hover:bg-violet-900"
+          >
+            Get Details
+          </Button>
+        </div>
+        <Button
+          variant={"link"}
+          onClick={() => {
+            setFineHistorydata([]);
+            setReservationHistorydata([]);
+          }}
+          className="text-lg text-gray-500"
+        >
+          clear
+        </Button>
       </div>
       {ReservationHistorydata.length > 0 && FineHistorydata.length > 0 && (
         <div>
           <div className="flex flex-col justify-center items-center pb-14">
-            <h2 className=" font-bold text-4xl pb-10 text-gray-600">
+            <h2 className=" font-bold text-4xl pb-10 text-gray-600 w-full">
               Reservation History
             </h2>
             <table className="table-auto  w-full">
               <thead>
-                <tr className="text-xl text-gray-600">
+                <tr className="text-xl text-gray-600 bg-violet-200 h-10">
                   <th>Book Image</th>
                   <th>Book</th>
                   <th>Reserve Date</th>
@@ -74,7 +73,7 @@ const BorrowHistory = () => {
               </thead>
               <tbody className="">
                 {ReservationHistorydata.map((item, index) => (
-                  <tr key={index} className="">
+                  <tr key={index} className="hover:bg-violet-50">
                     <td className="py-2">
                       <img
                         src={"data:image/jpeg;base64," + item.imgUrl}
@@ -92,12 +91,12 @@ const BorrowHistory = () => {
           </div>
 
           <div className="flex flex-col justify-center items-center">
-            <h2 className=" font-bold text-4xl pb-10 text-gray-600">
+            <h2 className=" font-bold text-4xl pb-10 text-gray-600 w-full">
               Rent History
             </h2>
             <table className="table-auto  w-full text-md">
               <thead>
-                <tr className="text-xl text-gray-600">
+                <tr className="text-xl text-gray-600 bg-violet-200 h-10">
                   <th>Book img</th>
                   <th>Book</th>
                   <th>Status</th>
@@ -108,7 +107,7 @@ const BorrowHistory = () => {
               </thead>
               <tbody className="">
                 {FineHistorydata.map((item, index) => (
-                  <tr key={index} className="">
+                  <tr key={index} className="hover:bg-violet-50">
                     <td className="py-2">
                       <img
                         src={"data:image/jpeg;base64," + item.imageUrl}
@@ -128,14 +127,15 @@ const BorrowHistory = () => {
                           {item.formattedReturnDate}
                         </div>
                       ) : (
-                        <Button
-                          className="bg-violet-950 hover:bg-violet-800"
-                          onClick={() => {
-                            onSubmit(item.id, item.fineAmount);
-                          }}
-                        >
-                          Submit
-                        </Button>
+                        // <Button
+                        //   className="bg-violet-950 hover:bg-violet-800"
+                        //   onClick={() => {
+                        //     onSubmit(item.id, item.fineAmount);
+                        //   }}
+                        // >
+                        //   Submit
+                        // </Button>
+                        <p className="font-semibold">item not returned yet.</p>
                       )}
                     </td>
                   </tr>

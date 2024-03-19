@@ -1,9 +1,22 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import BookServices, { Page, bookResponse } from "@/services/BookServices";
+import BookServices, {
+  Page,
+  bookRequest,
+  bookResponse,
+} from "@/services/BookServices";
 import { useInfiniteQuery, useQueries, useQuery } from "@tanstack/react-query";
 import { BookCard } from "./BookCard";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -19,8 +32,28 @@ import { FooterInternal } from "@/components/FooterInternal";
 import { Loading } from "@/components/Loading";
 import { ErrorPage } from "@/components/ErrorPage";
 import { ComboBoxResponsive } from "./ComboBoxResponsive";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { ToastAction } from "@radix-ui/react-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 export const BookList = () => {
+  const { toast } = useToast();
+  const [open, setOpen] = useState<boolean>(false);
+  const [book, setBook] = useState<bookRequest>({
+    title: "",
+    isbn: "",
+    authorName: "",
+    publisherName: "",
+    edition: "",
+    description: "",
+    language: "",
+    pages: 0,
+    cost: 0,
+    bookCount: 0,
+    link: "",
+    imageURL: "not given",
+  });
   const [serchName, setSearchName] = useState<string | null>();
   const [searchList, setSearchList] = useState<bookResponse[] | null>([]);
   const {
@@ -253,6 +286,18 @@ export const BookList = () => {
     setSelected(tempSelected);
   };
 
+  const handleAddBook = async () => {
+    BookServices.addBook(book).then((res) => {
+      toast({
+        title: "Book Added!.",
+        description: "Your Book have been Added to the server.",
+        action: <ToastAction altText="OK">OK</ToastAction>,
+      });
+    });
+    console.log(book);
+    setOpen(false);
+  };
+
   if (status === "pending") {
     return (
       <div className="flex justify-center items-center h-screen w-screen">
@@ -446,6 +491,204 @@ export const BookList = () => {
                       " w-full h-fit flex flex-row flex-wrap justify-center gap-0 sm:gap-2 items-center pt-2 border-t-[1px] border-gray-300 "
                     )}
                   >
+                    <div className="flex flex-col h-[30rem] w-[15rem] justify-between border-0 mb-3 mx-1 ">
+                      {/* <div className="bg-violet-100 mt-[2rem] h-full border-purple-400 border-2 rounded-lg mb-[6rem] flex justify-center items-center w-full">
+                        <Plus className="h-[6rem] w-[6rem] hover:w-[8rem]  hover:h-[8rem] transition-all duration-500  text-purple-700" />
+                      </div> */}
+                      <Dialog open={open}>
+                        <div className="bg-violet-100 mt-[2rem] h-full border-purple-400 border-2 rounded-lg mb-[6rem] flex justify-center items-center w-full">
+                          <DialogTrigger asChild onClick={() => setOpen(true)}>
+                            <Plus className="h-[6rem] w-[6rem] hover:w-[8rem]  hover:h-[8rem] transition-all duration-500  text-purple-700" />
+                          </DialogTrigger>
+                        </div>
+                        <DialogContent
+                          className="sm:max-w-[50rem]"
+                          onPointerDownOutside={() => setOpen(false)}
+                        >
+                          <DialogHeader>
+                            <DialogTitle>Edit Book</DialogTitle>
+                            <DialogDescription>
+                              Make changes to your book here. Click save when
+                              you're done.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid grid-cols-2 gap-4 py-4">
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label htmlFor="title" className="text-left">
+                                title
+                              </Label>
+                              <Input
+                                id="title"
+                                defaultValue={book.title}
+                                onChange={(e) =>
+                                  setBook({ ...book, title: e.target.value })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label htmlFor="isbn" className="text-left">
+                                isbn
+                              </Label>
+                              <Input
+                                id="isbn"
+                                defaultValue={book.isbn}
+                                onChange={(e) =>
+                                  setBook({ ...book, isbn: e.target.value })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label htmlFor="authorName" className="text-left">
+                                authorName
+                              </Label>
+                              <Input
+                                id="authorName"
+                                defaultValue={book.authorName}
+                                onChange={(e) =>
+                                  setBook({
+                                    ...book,
+                                    authorName: e.target.value,
+                                  })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label
+                                htmlFor="publisherName"
+                                className="text-left"
+                              >
+                                publisherName
+                              </Label>
+                              <Input
+                                id="publisherName"
+                                defaultValue={book.publisherName}
+                                onChange={(e) =>
+                                  setBook({
+                                    ...book,
+                                    publisherName: e.target.value,
+                                  })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label htmlFor="edition" className="text-left">
+                                edition
+                              </Label>
+                              <Input
+                                id="edition"
+                                defaultValue={book.edition}
+                                onChange={(e) =>
+                                  setBook({ ...book, edition: e.target.value })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label
+                                htmlFor="description"
+                                className="text-left"
+                              >
+                                description
+                              </Label>
+                              <Input
+                                id="description"
+                                defaultValue={book.description}
+                                onChange={(e) =>
+                                  setBook({
+                                    ...book,
+                                    description: e.target.value,
+                                  })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label htmlFor="language" className="text-left">
+                                language
+                              </Label>
+                              <Input
+                                id="language"
+                                defaultValue={book.language}
+                                onChange={(e) =>
+                                  setBook({ ...book, language: e.target.value })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label htmlFor="pages" className="text-left">
+                                pages
+                              </Label>
+                              <Input
+                                id="pages"
+                                defaultValue={book.pages}
+                                onChange={(e) =>
+                                  setBook({
+                                    ...book,
+                                    pages: parseInt(e.target.value),
+                                  })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label htmlFor="cost" className="text-left">
+                                cost
+                              </Label>
+                              <Input
+                                id="cost"
+                                defaultValue={book.cost}
+                                onChange={(e) =>
+                                  setBook({
+                                    ...book,
+                                    cost: parseInt(e.target.value),
+                                  })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label htmlFor="bookCount" className="text-left">
+                                bookCount
+                              </Label>
+                              <Input
+                                id="bookCount"
+                                defaultValue={book.bookCount}
+                                onChange={(e) =>
+                                  setBook({
+                                    ...book,
+                                    bookCount: parseInt(e.target.value),
+                                  })
+                                }
+                                className=""
+                              />
+                            </div>
+                            <div className="grid grid-row-2  items-center gap-4">
+                              <Label htmlFor="link" className="text-left">
+                                link
+                              </Label>
+                              <Input
+                                id="link"
+                                defaultValue={book.link}
+                                onChange={(e) =>
+                                  setBook({ ...book, link: e.target.value })
+                                }
+                                className=""
+                              />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button type="submit" onClick={handleAddBook}>
+                              Save changes
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                     {data &&
                       data.pages.map((page) =>
                         /**

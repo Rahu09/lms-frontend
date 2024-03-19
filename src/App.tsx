@@ -24,9 +24,18 @@ function App() {
             <Route path="/booklist" element={<BookList />} />
             <Route path="/bookinfo/:bookId" element={<BookInfoBase />} />
             {auth?.role === "ADMIN" ? (
-              <Route path="/profile" element={<AdminProfileBase />} />
+              <>
+                <Route
+                  path="/profile:section "
+                  element={<AdminProfileBase />}
+                />
+                <Route path="/profile" element={<AdminProfileBase />} />
+              </>
             ) : (
-              <Route path="/profile" element={<ProfileBase />} />
+              <>
+                <Route path="/profile:section" element={<ProfileBase />} />
+                <Route path="/profile" element={<ProfileBase />} />
+              </>
             )}
             <Route path="*" element={<div>Page path not defined</div>} />
           </Routes>

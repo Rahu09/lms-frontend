@@ -1,3 +1,4 @@
+import { DataProps } from "@/context/AuthorizationProvider";
 import axios from "axios";
 
 class AuthenticationService {
@@ -30,7 +31,7 @@ class AuthenticationService {
 
     return response.data;
   }
-  async getDetails() {
+  getDetails: () => Promise<DataProps> = async () => {
     if (localStorage.getItem("email") === null) return null;
     const response = await axios.get(
       `http://localhost:8080/api/v1/auth/getDetails/${localStorage.getItem(
@@ -39,7 +40,7 @@ class AuthenticationService {
       this.config
     );
     return response.data;
-  }
+  };
 
   async logout() {
     localStorage.removeItem("token");
