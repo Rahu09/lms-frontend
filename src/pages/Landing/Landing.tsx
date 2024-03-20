@@ -5,27 +5,27 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 export const Landing = () => {
   const filterCaroselData = [
     {
-      type: "fiction",
-      filterList: {
-        categoryList: ["fantasy"],
-        authorList: [],
-        languageList: ["english"],
-      },
-    },
-    {
       type: "fantasy",
       filterList: {
         categoryList: ["fantasy"],
         authorList: [],
-        languageList: ["english"],
+        languageList: [],
+      },
+    },
+    {
+      type: "mystery",
+      filterList: {
+        categoryList: ["mystery"],
+        authorList: [],
+        languageList: [],
       },
     },
     {
       type: "romance",
       filterList: {
-        categoryList: ["fantasy"],
+        categoryList: ["romance"],
         authorList: [],
-        languageList: ["english"],
+        languageList: [],
       },
     },
   ];

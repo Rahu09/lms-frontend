@@ -492,11 +492,8 @@ export const BookList = () => {
                     )}
                   >
                     <div className="flex flex-col h-[30rem] w-[15rem] justify-between border-0 mb-3 mx-1 ">
-                      {/* <div className="bg-violet-100 mt-[2rem] h-full border-purple-400 border-2 rounded-lg mb-[6rem] flex justify-center items-center w-full">
-                        <Plus className="h-[6rem] w-[6rem] hover:w-[8rem]  hover:h-[8rem] transition-all duration-500  text-purple-700" />
-                      </div> */}
                       <Dialog open={open}>
-                        <div className="bg-violet-100 mt-[2rem] h-full border-purple-400 border-2 rounded-lg mb-[6rem] flex justify-center items-center w-full">
+                        <div className="bg-violet-100 h-full border-purple-400 border-2 rounded-lg mb-[7rem] flex justify-center items-center w-full">
                           <DialogTrigger asChild onClick={() => setOpen(true)}>
                             <Plus className="h-[6rem] w-[6rem] hover:w-[8rem]  hover:h-[8rem] transition-all duration-500  text-purple-700" />
                           </DialogTrigger>

@@ -10,7 +10,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [errors, setErrors] = useState<any | null>(null);
+  const [errors, setErrors] = useState<unknown | null>(null);
   const [input, setInput] = useState<{ email: string; password: string }>({
     email: "",
     password: "",
@@ -49,7 +49,6 @@ export const Login = () => {
 
       if (error instanceof Error && error.name === "ZodError") {
         setErrors(error);
-        // console.log(errors);
       } else {
         throw error;
       }
